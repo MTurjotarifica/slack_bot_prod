@@ -25,7 +25,7 @@ def handle_slash_command():
 
     # Execute the appropriate function based on the command
     if command == "/example":
-        slack_app.client.chat_postMessage(channel=response_url, text="it worksssss!")
+        slack_app.client.chat_postMessage(channel='#slack_bot_prod', text="it worksssss!")
         response_text = handle_example_command(text)
     else:
         response_text = "Unknown command: {}".format(command)
@@ -50,6 +50,8 @@ def handle_hello_request():
     # Execute the /hello command function
     slack_app.client.chat_postMessage(response_type= "in_channel", channel='#slack_bot_prod', text="it works!", )
     return "Hello world1" , 200
+
+
 
 # Start the Slack app using the Flask app as a middleware
 handler = SlackRequestHandler(slack_app)
