@@ -1,0 +1,11 @@
+flask
+slack_bolt
+python-dotenv
+numpy
+pandas
+datetime
+seaborn
+plotly
+matplotlib
+slack_sdk
+slackeventsapi
