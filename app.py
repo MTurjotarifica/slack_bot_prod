@@ -14,7 +14,8 @@ slack_app = App(
     signing_secret=os.environ["SLACK_SIGNING_SECRET"]
 )
 
-client = WebClient(token=os.environ["SLACK_BOT_TOKEN"])
+
+client = slack_app.client
 # Handle incoming slash command requests
 @app.route("/slack/command", methods=["POST"])
 def handle_slash_command():
@@ -49,6 +50,7 @@ def handle_example_command(text):
 def handle_hello_request():
     # Execute the /hello command function
     slack_app.client.chat_postMessage(response_type= "in_channel", channel='#slack_bot_prod', text="it works!", )
+    client.chat_postMessage(response_type= "in_channel", channel='#slack_bot_prod', text="2nd it works!", )
     return "Hello world1" , 200
 
 
