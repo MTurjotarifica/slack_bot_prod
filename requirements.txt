@@ -7,3 +7,4 @@ datetime
 seaborn
 plotly
 matplotlib
+azure.cognitiveservices.speech
