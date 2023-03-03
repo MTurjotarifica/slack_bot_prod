@@ -43,9 +43,11 @@ def handle_slash_command():
 #...........
 
 def backgroundworker_mp3(text, response_url):
-
+    
     # your task
     # The environment variables named "SPEECH_KEY" and "SPEECH_REGION"
+    
+ 
     
     # subscription and speech_region values are obtained from azure portal
     speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'),
@@ -79,6 +81,18 @@ def backgroundworker_mp3(text, response_url):
                 "username": "bot"}
     
     #uploading the file to slack using bolt syntax for py
+    
+    #uploading the file to azure blob storage
+    container_string=os.environ('CONNECTION_STRING')
+    storage_account_name = "storage4slack"
+    container_name = "mp3"
+    blob_service_client = BlobServiceClient.from_connection_string (container_string) 
+    container_client = blob_service_client.get_container_client(container_name)
+    filename = f"{(text[:3]+text[-3:])}.mp3"
+    blob_client = container_client.get_blob_client(filename)
+    with open(filename, "rb") as data:
+        blob_client.upload_blob(data)
+        
     try:
         filename=f"{(text[:3]+text[-3:])}.mp3"
         response = client.files_upload(channels='#slack_bot_prod',
