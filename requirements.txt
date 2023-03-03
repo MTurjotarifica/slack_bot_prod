@@ -8,3 +8,6 @@ seaborn
 plotly
 matplotlib
 azure.cognitiveservices.speech
+
+azure.functions
+azure.storage.blob
