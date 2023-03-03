@@ -11,3 +11,5 @@ azure.cognitiveservices.speech
 
 azure.functions
 azure.storage.blob
+slack_sdk
+slackeventsapi
