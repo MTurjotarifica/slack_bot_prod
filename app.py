@@ -8,6 +8,8 @@ from slack_sdk import WebClient
 from threading import Thread
 import azure.cognitiveservices.speech as speechsdk
 
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+
 load_dotenv()
 
 # Initialize the Flask app and the Slack app
