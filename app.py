@@ -1,3 +1,4 @@
+#mp3 command added 
 import os
 from slack_bolt import App
 from slack_bolt.adapter.flask import SlackRequestHandler
@@ -7,11 +8,6 @@ from slack_sdk import WebClient
 from threading import Thread
 import azure.cognitiveservices.speech as speechsdk
 
-from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
-import time
-import requests
-import speechsdk
-
 load_dotenv()
 
 # Initialize the Flask app and the Slack app
@@ -20,9 +16,6 @@ slack_app = App(
     token=os.environ["SLACK_BOT_TOKEN"],
     signing_secret=os.environ["SLACK_SIGNING_SECRET"]
 )
-
-connect_str = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
-blob_service_client = BlobServiceClient.from_connection_string(connect_str)
 
 
 client = slack_app.client
@@ -50,6 +43,8 @@ def handle_slash_command():
 #...........
 
 def backgroundworker_mp3(text, response_url):
+
+    # your task
     # The environment variables named "SPEECH_KEY" and "SPEECH_REGION"
     
     # subscription and speech_region values are obtained from azure portal
@@ -63,6 +58,7 @@ def backgroundworker_mp3(text, response_url):
     speech_config.speech_synthesis_voice_name='en-GB-RyanNeural'
     
     #creating speech_synthesizer object
+
     speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, 
                                                      audio_config=audio_config)
     
@@ -82,18 +78,9 @@ def backgroundworker_mp3(text, response_url):
     payload = {"text":"your task is complete",
                 "username": "bot"}
     
-    #uploading the file to azure blob storage
-    connect_str = os.getenv('AZURE_STORAGE_CONNECTION_STRING')
-    container_name = "mp3"
-    blob_service_client = BlobServiceClient.from_connection_string(connect_str)
-    container_client = blob_service_client.get_container_client(container_name)
-    filename = f"{(text[:3]+text[-3:])}.mp3"
-    blob_client = container_client.get_blob_client(filename)
-    with open(filename, "rb") as data:
-        blob_client.upload_blob(data)
-
     #uploading the file to slack using bolt syntax for py
     try:
+        filename=f"{(text[:3]+text[-3:])}.mp3"
         response = client.files_upload(channels='#slack_bot_prod',
                                         file=filename,
                                         initial_comment="Audio: ")
