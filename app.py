@@ -83,7 +83,7 @@ def backgroundworker_mp3(text, response_url):
     #uploading the file to slack using bolt syntax for py
     
     #uploading the file to azure blob storage
-    container_string=os.environ('CONNECTION_STRING')
+    container_string=os.environ["CONNECTION_STRING"]
     storage_account_name = "storage4slack"
     container_name = "mp3"
     blob_service_client = BlobServiceClient.from_connection_string (container_string) 
