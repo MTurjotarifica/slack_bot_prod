@@ -12,6 +12,7 @@ from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slackeventsapi import SlackEventAdapter
+import requests
 
 load_dotenv()
 
