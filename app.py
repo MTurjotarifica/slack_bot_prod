@@ -135,6 +135,7 @@ def handle_example_command(text):
 # Add a route for the /hello command
 @app.route("/hello", methods=["POST"])
 def handle_hello_request():
+    data = request.form
     channel_id = data.get('channel_id')
     # Execute the /hello command function
     slack_app.client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="it works!", )
