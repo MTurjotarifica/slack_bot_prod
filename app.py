@@ -95,10 +95,10 @@ def backgroundworker_mp3(text, response_url):
     container_name = "mp3"
     blob_service_client = BlobServiceClient.from_connection_string (container_string) 
     container_client = blob_service_client.get_container_client(container_name)
-    filename = f"{(text[:3]+text[-3:])}.mp3"
+#     filename = f"{(text[:3]+text[-3:])}.mp3"
     blob_client = container_client.get_blob_client(filename)
     blob_name= filename
-    with open(speech_synthesis_result, "rb") as data:
+    with open(filename, "rb") as data:
         blob_client.upload_blob(data)
         
     try:
