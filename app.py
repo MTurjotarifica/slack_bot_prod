@@ -110,7 +110,7 @@ def backgroundworker_mp3(text, response_url):
         with open(filename, 'rb') as file:
             file_data = file.read()
         
-        filename=f"{(text[:3]+text[-3:])}.mp3"
+#         filename=f"{(text[:3]+text[-3:])}.mp3"
         response = client.files_upload(channels='#slack_bot_prod',
                                         file=file_data,
                                         initial_comment="Audio: ")
