@@ -102,8 +102,10 @@ def backgroundworker_mp3(text, response_url):
         blob_client.upload_blob(data)
         
     try:
+        # Download the blob as binary data
         blob_client = blob_service_client.get_blob_client(container_name, blob_name)
         blob_data = blob_client.download_blob().readall()
+        
         filename=f"{(text[:3]+text[-3:])}.mp3"
         response = client.files_upload(channels='#slack_bot_prod',
                                         file=blob_data,
