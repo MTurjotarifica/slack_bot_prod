@@ -15,6 +15,8 @@ from slackeventsapi import SlackEventAdapter
 import requests
 import json
 
+import deepl
+
 load_dotenv()
 
 # Initialize the Flask app and the Slack app
