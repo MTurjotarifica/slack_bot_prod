@@ -95,7 +95,7 @@ def backgroundworker_mp3(text, response_url):
     container_name = "mp3"
     blob_service_client = BlobServiceClient.from_connection_string (container_string) 
     container_client = blob_service_client.get_container_client(container_name)
-#     filename = f"{(text[:3]+text[-3:])}.mp3"
+    filename = f"{(text[:3]+text[-3:])}.mp3"
     blob_client = container_client.get_blob_client(filename)
     blob_name= filename
     with open(filename, "rb") as data:
@@ -106,9 +106,13 @@ def backgroundworker_mp3(text, response_url):
         blob_client = blob_service_client.get_blob_client(container_name, blob_name)
         blob_data = blob_client.download_blob().readall()
         
+        # Open the audio file and read its contents
+        with open(filename, 'rb') as file:
+            file_data = file.read()
+        
         filename=f"{(text[:3]+text[-3:])}.mp3"
         response = client.files_upload(channels='#slack_bot_prod',
-                                        file=blob_data,
+                                        file=file_data,
                                         initial_comment="Audio: ")
         assert response["file"]  # the uploaded file
     except SlackApiError as e:
