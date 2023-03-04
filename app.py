@@ -115,6 +115,11 @@ def backgroundworker_mp3(text, response_url):
                                         file=file_data,
                                         initial_comment="Audio: ")
         assert response["file"]  # the uploaded file
+        # Delete the blob
+
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+        blob_client.delete_blob()
+        
     except SlackApiError as e:
         # You will get a SlackApiError if "ok" is False
         assert e.response["ok"] is False
