@@ -21,3 +21,4 @@ pandas
 mysql.connector
 pathlib
 scipy
+slack
