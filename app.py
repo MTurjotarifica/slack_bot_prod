@@ -17,7 +17,6 @@ import json
 
 import deepl
 
-from pathlib import Path  
 import mysql.connector as mysql
 import numpy as np
 import pandas as pd
