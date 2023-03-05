@@ -20,4 +20,4 @@ numpy
 pandas
 mysql.connector
 pathlib
-
+scipy
