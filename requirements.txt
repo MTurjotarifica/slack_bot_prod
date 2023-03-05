@@ -15,3 +15,9 @@ slack_sdk
 slackeventsapi
 
 deepl
+
+numpy
+pandas
+mysql.connector
+pathlib
+
