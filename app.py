@@ -35,7 +35,7 @@ import matplotlib.dates as mdates
 import slack
 
 from sqlalchemy import create_engine, Table, MetaData
-#from sqlalchemy import text as sqlalctext #edit st 2023-03-07
+from sqlalchemy import text as sqlalctext #edit st 2023-03-07
 
 from vis_functions import *
 
@@ -71,13 +71,9 @@ def load_dd_df():
 			   )
     
     #this is the query to be performed #edit st 2023-03-07
-    stmt = "SELECT * \
-            FROM digital_demand \
-            WHERE (gt_category = 13) \
-            AND (country = 'DE'); \
-            "
+    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE') AND (date > '2023-01-01');"
     
-    df_dd_raw = pd.read_sql(stmt, connection) #edit st 2023-03-07
+    df_dd_raw = pd.read_sql(sqlalctext(stmt), connection) #edit st 2023-03-07
     df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
     
     connection.close()
