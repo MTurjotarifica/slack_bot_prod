@@ -33,6 +33,7 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import matplotlib.dates as mdates
 import slack
+
 from sqlalchemy import create_engine, Table, MetaData
 
 from vis_functions import *
@@ -75,7 +76,7 @@ def load_dd_df():
             AND (country = 'DE'); \
             "
     
-    df_dd_raw = pd.read_sql(stmt, connection)
+    df_dd_raw = pd.read_sql(sqlalchemy.text(stmt), connection) #edit st 2023-03-07
     df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
     
     connection.close()
