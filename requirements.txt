@@ -21,3 +21,4 @@ pandas
 mysql.connector
 scipy
 slack
+aiohttp
