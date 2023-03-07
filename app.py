@@ -35,6 +35,7 @@ import matplotlib.dates as mdates
 import slack
 
 from sqlalchemy import create_engine, Table, MetaData
+from sqlalchemy import text as sqlalctext
 
 from vis_functions import *
 
@@ -76,7 +77,7 @@ def load_dd_df():
             AND (country = 'DE'); \
             "
     
-    df_dd_raw = pd.read_sql(sqlalchemy.text(stmt), connection) #edit st 2023-03-07
+    df_dd_raw = pd.read_sql(sqlalctext(stmt), connection) #edit st 2023-03-07
     df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
     
     connection.close()
