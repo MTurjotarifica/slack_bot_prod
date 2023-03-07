@@ -49,51 +49,66 @@ slack_app = App(
 
 client = slack_app.client
 
+conn = mysql.connect(user='Elbarto', password='aLesa2T6nfNwSpwJAP8tKUpyLuRC8xtg', host='mysqldatabase.cmi5f1vp8ktf.us-east-1.rds.amazonaws.com', database='sandbox', port=3306)
+
+query = """
+    select * from digital_demand
+    where gt_category=13
+    and country = 'DE'
+    and date > '2020-01-01';
+    """
+    
+    #NOW WE ARE CREATING df_raw simply from digital demand database
+df_raw= pd.read_sql_query(query, conn, parse_dates =['date'])
+
+    #always close the connection
+conn.close()
+
+
 ##################################################################
-#function to create load difital demand as dataframe
-def load_dd_df():
-    '''
-    loads digital demand dataframe for all dates
-    where country is DE
-    and gt_category 13
+# #function to create load difital demand as dataframe
+# def load_dd_df():
+#     '''
+#     loads digital demand dataframe for all dates
+#     where country is DE
+#     and gt_category 13
 
-    returns:
-        df_dd_raw (Dataframe)
-    '''    
+#     returns:
+#         df_dd_raw (Dataframe)
+#     '''    
+#     #SQL ALCHEMY
+#     #creating the engine
+#     #syntax: dialect+driver://username:password@host:port/database
+#     engine = create_engine('mysql+pymysql://sandbox_read_only:zhsqehk23Xs8tVmVn3sSkyq5TvZumR5q@mysqldatabase.cmi5f1vp8ktf.us-east-1.rds.amazonaws.com:3306/sandbox')
+    
+#     #creating a connection object
+#     connection = engine.connect()
+    
+#     #creating the metadata object
+#     metadata = MetaData()
+    
+#     #loading the digital_demand table
+#     df_dd_raw_table = Table('digital_demand',
+#                             metadata,
+#                             autoload=True,
+#                             autoload_with=engine)
+    
+#     #this is the query to be performed
+#     stmt = "SELECT * \
+#             FROM digital_demand \
+#             WHERE (gt_category = 13) \
+#             AND (country = 'DE'); \
+#             "
+    
+#     df_dd_raw = pd.read_sql(stmt, connection)
+#     df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
+    
+#     connection.close()
+    
+#     return df_dd_raw
 
-    #SQL ALCHEMY
-    #creating the engine
-    #syntax: dialect+driver://username:password@host:port/database
-    engine = create_engine('mysql+pymysql://sandbox_read_only:zhsqehk23Xs8tVmVn3sSkyq5TvZumR5q@mysqldatabase.cmi5f1vp8ktf.us-east-1.rds.amazonaws.com:3306/sandbox')
-    
-    #creating a connection object
-    connection = engine.connect()
-    
-    #creating the metadata object
-    metadata = MetaData()
-    
-    #loading the digital_demand table
-    df_dd_raw_table = Table('digital_demand',
-                            metadata,
-                            autoload=True,
-                            autoload_with=engine)
-    
-    #this is the query to be performed
-    stmt = "SELECT * \
-            FROM digital_demand \
-            WHERE (gt_category = 13) \
-            AND (country = 'DE'); \
-            "
-    
-    df_dd_raw = pd.read_sql(stmt, connection)
-    df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
-    
-    connection.close()
-    
-    return df_dd_raw
-
-#storing df_digital_demand in variable df_raw to maintain code in viz generator
-df_raw = load_dd_df()
+# #storing df_digital_demand in variable df_raw to maintain code in viz generator
+# df_raw = load_dd_df()
 
 #######################################_________________________
 
