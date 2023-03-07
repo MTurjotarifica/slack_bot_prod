@@ -65,9 +65,8 @@ def load_dd_df():
     
     #loading the digital_demand table
     df_dd_raw_table = Table('digital_demand',
-                            metadata,
-                            autoload=True,
-                            autoload_with=engine)
+                            metadata
+			   )
     
     #this is the query to be performed
     stmt = "SELECT * \
