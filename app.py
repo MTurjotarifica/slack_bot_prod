@@ -605,25 +605,21 @@ condition_list = []
 #creating an empty list for condition branching on dd_vis_trigger
 condition_list_dd_vis = []
 
+# st edit mar 08, 2023 fixed indentation using vs code
+# indendation errors are being caused by spyder (the ide I use)
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
 def interactive_trigger():
-	data = request.form
-    	#print(data)
-    	#this is the one that I am making use of
-    	data2 = request.form.to_dict()
-    	#print(data2)
-    	#data3 = request.args.to_dict()
-    	#print(data3)
-    	user_id = data.get('user_id')
-    	channel_id = data.get('channel_id')
-    	text = data.get('text')
-    	#response_url = data.get("response_url")
-    	#print(response_url)
+    data = request.form
+    data2 = request.form.to_dict()
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+    text = data.get('text')
+    #response_url = data.get("response_url")
+    #print(response_url)
+    client.chat_postMessage(response_type= "in_channel", channel="#slack_bot_prod", text='inter-active works', )
 
-    	client.chat_postMessage(response_type= "in_channel", channel="#slack_bot_prod", text='inter-active works', )
-    	
-	# added return statement- there is still an existing return at the end #st edit mar 08, 2023
-	return 'interactive trigger is functioning as it should', 200 #st edit mar 08, 2023
+    # added return statement- there is still an existing return at the end #st edit mar 08, 2023
+    return 'interactive trigger is functioning as it should', 200 #st edit mar 08, 2023
 
 
 
