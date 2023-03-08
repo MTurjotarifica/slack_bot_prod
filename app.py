@@ -607,6 +607,7 @@ condition_list_dd_vis = []
 
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
 def interactive_trigger():
+	return "Hello world1" , 200
     data = request.form
     #print(data)
     #this is the one that I am making use of
