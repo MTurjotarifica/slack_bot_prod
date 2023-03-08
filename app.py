@@ -607,7 +607,6 @@ condition_list_dd_vis = []
 
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
 def interactive_trigger():
-	return "Hello world1" , 200
     data = request.form
     #print(data)
     #this is the one that I am making use of
@@ -620,397 +619,446 @@ def interactive_trigger():
     text = data.get('text')
     #response_url = data.get("response_url")
     #print(response_url)
+
+    client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="interactive-endpoint works", )
     
     
-    #FOR INTERACTIVE BLOCKKITS data2 and json.loads parsing seems to work
-    #but not data.get("response_url") SYNTAX. It returns NONE
-    response_url = json.loads(data2['payload'])['response_url']
-    actions = data.get("actions")
-    actions_value = data.get("actions.value")
-    action_id = json.loads(data2['payload'])['actions'][0]['action_id']
-    #event = payload.get('event', {})
-    #text = event.get('text')
-    greeting_message = "Processing your request. Please wait."
-    ending_message = "Process executed successfully"
-    #payload = request.payload
-    #payload = json.loads(data2['payload'])
-    #obtain the value inserted in the text prompt
-    #kw_value=payload['actions'][0]['value']
+#     #FOR INTERACTIVE BLOCKKITS data2 and json.loads parsing seems to work
+#     #but not data.get("response_url") SYNTAX. It returns NONE
+#     response_url = json.loads(data2['payload'])['response_url']
+#     actions = data.get("actions")
+#     actions_value = data.get("actions.value")
+#     action_id = json.loads(data2['payload'])['actions'][0]['action_id']
+#     #event = payload.get('event', {})
+#     #text = event.get('text')
+#     greeting_message = "Processing your request. Please wait."
+#     ending_message = "Process executed successfully"
+#     #payload = request.payload
+#     #payload = json.loads(data2['payload'])
+#     #obtain the value inserted in the text prompt
+#     #kw_value=payload['actions'][0]['value']
     
-    # if action_id == "hello_world_input_act":
-    #     client.chat_postMessage(channel='#test_bot',
-    #                             text=f"{text}   {response_url}"
-    #                             )
+#     # if action_id == "hello_world_input_act":
+#     #     client.chat_postMessage(channel='#test_bot',
+#     #                             text=f"{text}   {response_url}"
+#     #                             )
     
-    #     thr = Thread(target=backgroundworker_hello_world, 
-    #              args=[text,
-    #                    response_url]
-    #              )
+#     #     thr = Thread(target=backgroundworker_hello_world, 
+#     #              args=[text,
+#     #                    response_url]
+#     #              )
     
-    #     thr.start()
-    
-    
+#     #     thr.start()
     
     
-#     if action_id == "wordcloud_kw_inp_act":
-#         payload = json.loads(data2['payload'])
-#         #obtain the value inserted in the text prompt
-#         kw_value=payload['actions'][0]['value']
+    
+    
+# #     if action_id == "wordcloud_kw_inp_act":
+# #         payload = json.loads(data2['payload'])
+# #         #obtain the value inserted in the text prompt
+# #         kw_value=payload['actions'][0]['value']
         
-#         condition_list.append(kw_value)
+# #         condition_list.append(kw_value)
         
 
         
-#         #block to select language in wordcloud
-#         wordcloud_lang_block =  [
-#     		{
-#     			"type": "input",
-#     			"element": {
-#     				"type": "static_select",
-#     				"placeholder": {
-#     					"type": "plain_text",
-#     					"text": "Select an item",
-#     					"emoji": True
-#     				},
-#     				"options": [
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "English",
-#     							"emoji": True
-#     						},
-#     						"value": "en"
-#     					},
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "German",
-#     							"emoji": True
-#     						},
-#     						"value": "de"
-#     					},
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "Spanish",
-#     							"emoji": True
-#     						},
-#     						"value": "es"
-#     					}
-#     				],
-#     				"action_id": "wordcloud_kw_lang_act"
-#     			},
-#     			"label": {
-#     				"type": "plain_text",
-#     				"text": "Select Language for Wordcloud",
-#     				"emoji": True
-#     			}}]
+# #         #block to select language in wordcloud
+# #         wordcloud_lang_block =  [
+# #     		{
+# #     			"type": "input",
+# #     			"element": {
+# #     				"type": "static_select",
+# #     				"placeholder": {
+# #     					"type": "plain_text",
+# #     					"text": "Select an item",
+# #     					"emoji": True
+# #     				},
+# #     				"options": [
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "English",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "en"
+# #     					},
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "German",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "de"
+# #     					},
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "Spanish",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "es"
+# #     					}
+# #     				],
+# #     				"action_id": "wordcloud_kw_lang_act"
+# #     			},
+# #     			"label": {
+# #     				"type": "plain_text",
+# #     				"text": "Select Language for Wordcloud",
+# #     				"emoji": True
+# #     			}}]
         
-#         #sending kw_value and language selection dropdown
-#         client.chat_postMessage(channel='#asb_dd_top10_changes',
-#                                 text=f"{kw_value}    {response_url}",
-#                                 blocks=wordcloud_lang_block
-#                                 )
+# #         #sending kw_value and language selection dropdown
+# #         client.chat_postMessage(channel='#asb_dd_top10_changes',
+# #                                 text=f"{kw_value}    {response_url}",
+# #                                 blocks=wordcloud_lang_block
+# #                                 )
         
-#     elif action_id == "wordcloud_kw_lang_act":
-#         payload = json.loads(data2['payload'])
-#         kw_value=payload['actions'][0]['selected_option']['value']
-#         condition_list.append(kw_value)
+# #     elif action_id == "wordcloud_kw_lang_act":
+# #         payload = json.loads(data2['payload'])
+# #         kw_value=payload['actions'][0]['selected_option']['value']
+# #         condition_list.append(kw_value)
         
         
-#         #creating a block for shape selection
-#         wordcloud_shape_block=[
-#     		{
-#     			"type": "input",
-#     			"element": {
-#     				"type": "static_select",
-#     				"placeholder": {
-#     					"type": "plain_text",
-#     					"text": "Select an item",
-#     					"emoji": True
-#     				},
-#     				"options": [
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "500 PX",
-#     							"emoji": True
-#     						},
-#     						"value": "fab fa-500px"
-#     					},
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "Accessible Icon",
-#     							"emoji": True
-#     						},
-#     						"value": "fab fa-accessible-icon"
-#     					},
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "Accusoft",
-#     							"emoji": True
-#     						},
-#     						"value": "fab fa-accusoft"
-#     					},
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "Coffee",
-#     							"emoji": True
-#     						},
-#     						"value": "fas fa-coffee"
-#     					},
-#     				],
-#     				"action_id": "wordcloud_shape_act"
-#     			},
-#     			"label": {
-#     				"type": "plain_text",
-#     				"text": "Select shape for Wordcloud",
-#     				"emoji": True
-#     			}
-#     		}
-#     	]
+# #         #creating a block for shape selection
+# #         wordcloud_shape_block=[
+# #     		{
+# #     			"type": "input",
+# #     			"element": {
+# #     				"type": "static_select",
+# #     				"placeholder": {
+# #     					"type": "plain_text",
+# #     					"text": "Select an item",
+# #     					"emoji": True
+# #     				},
+# #     				"options": [
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "500 PX",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "fab fa-500px"
+# #     					},
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "Accessible Icon",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "fab fa-accessible-icon"
+# #     					},
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "Accusoft",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "fab fa-accusoft"
+# #     					},
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "Coffee",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "fas fa-coffee"
+# #     					},
+# #     				],
+# #     				"action_id": "wordcloud_shape_act"
+# #     			},
+# #     			"label": {
+# #     				"type": "plain_text",
+# #     				"text": "Select shape for Wordcloud",
+# #     				"emoji": True
+# #     			}
+# #     		}
+# #     	]
         
-#         #sending kw_value and language selection dropdown
-#         client.chat_postMessage(channel='#asb_dd_top10_changes',
-#                                 text=f"{kw_value}     {response_url}",
-#                                 blocks=wordcloud_shape_block2
-#                                 )
+# #         #sending kw_value and language selection dropdown
+# #         client.chat_postMessage(channel='#asb_dd_top10_changes',
+# #                                 text=f"{kw_value}     {response_url}",
+# #                                 blocks=wordcloud_shape_block2
+# #                                 )
         
-#     elif action_id == "wordcloud_shape_act":
-#         payload = json.loads(data2['payload'])
-#         #obtaining kw_value and appending value to list
-#         kw_value=payload['actions'][0]['selected_option']['value']
-#         condition_list.append(kw_value)
+# #     elif action_id == "wordcloud_shape_act":
+# #         payload = json.loads(data2['payload'])
+# #         #obtaining kw_value and appending value to list
+# #         kw_value=payload['actions'][0]['selected_option']['value']
+# #         condition_list.append(kw_value)
         
-#         #creating a block color scheme pick
-#         wordcloud_color_block=[
-#     		{
-#     			"type": "divider"
-#     		},
-#     		{
-#     			"type": "input",
-#     			"element": {
-#     				"type": "static_select",
-#     				"placeholder": {
-#     					"type": "plain_text",
-#     					"text": "Select an item",
-#     					"emoji": True
-#     				},
-#     				"options": [
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "Blue-Green",
-#     							"emoji": True
-#     						},
-#     						"value": "BluGrn_4"
-#     					},
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "Blue-Yellow",
-#     							"emoji": True
-#     						},
-#     						"value": "BluYl_3"
-#     					},
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "Brown-Yellow",
-#     							"emoji": True
-#     						},
-#     						"value": "BrwnYl_2"
-#     					},
-#     					{
-#     						"text": {
-#     							"type": "plain_text",
-#     							"text": "Burgundy",
-#     							"emoji": True
-#     						},
-#     						"value": "Burg_2"
-#     					}
-#     				],
-#     				"action_id": "wordcloud_color_act"
-#     			},
-#     			"label": {
-#     				"type": "plain_text",
-#     				"text": "Please choose a color palette",
-#     				"emoji": True
-#     			}
-#     		}
-#     	]
+# #         #creating a block color scheme pick
+# #         wordcloud_color_block=[
+# #     		{
+# #     			"type": "divider"
+# #     		},
+# #     		{
+# #     			"type": "input",
+# #     			"element": {
+# #     				"type": "static_select",
+# #     				"placeholder": {
+# #     					"type": "plain_text",
+# #     					"text": "Select an item",
+# #     					"emoji": True
+# #     				},
+# #     				"options": [
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "Blue-Green",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "BluGrn_4"
+# #     					},
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "Blue-Yellow",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "BluYl_3"
+# #     					},
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "Brown-Yellow",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "BrwnYl_2"
+# #     					},
+# #     					{
+# #     						"text": {
+# #     							"type": "plain_text",
+# #     							"text": "Burgundy",
+# #     							"emoji": True
+# #     						},
+# #     						"value": "Burg_2"
+# #     					}
+# #     				],
+# #     				"action_id": "wordcloud_color_act"
+# #     			},
+# #     			"label": {
+# #     				"type": "plain_text",
+# #     				"text": "Please choose a color palette",
+# #     				"emoji": True
+# #     			}
+# #     		}
+# #     	]
         
-#         #sending kw_value and language selection dropdown
-#         client.chat_postMessage(channel='#asb_dd_top10_changes',
-#                                 text=f"{kw_value}     {response_url}",
-#                                 blocks=wordcloud_color_block
-#                                 )
+# #         #sending kw_value and language selection dropdown
+# #         client.chat_postMessage(channel='#asb_dd_top10_changes',
+# #                                 text=f"{kw_value}     {response_url}",
+# #                                 blocks=wordcloud_color_block
+# #                                 )
         
-#     elif action_id == "wordcloud_color_act":
-#         payload = json.loads(data2['payload'])
-#         #obtaining kw_value and appending value to list
-#         kw_value=payload['actions'][0]['selected_option']['value']
-#         condition_list.append(kw_value)
-#     #def backgroundworker_wordcloud_shape(wordcloud_lang_to, 
-#                                             #wordcloud_lang_kw, 
-#                                             #wordcloud_shape_kw, 
-#                                             #response_url):
+# #     elif action_id == "wordcloud_color_act":
+# #         payload = json.loads(data2['payload'])
+# #         #obtaining kw_value and appending value to list
+# #         kw_value=payload['actions'][0]['selected_option']['value']
+# #         condition_list.append(kw_value)
+# #     #def backgroundworker_wordcloud_shape(wordcloud_lang_to, 
+# #                                             #wordcloud_lang_kw, 
+# #                                             #wordcloud_shape_kw, 
+# #                                             #response_url):
                                                 
-#         thr = Thread(target=backgroundworker_wordcloud_shape, args=[condition_list[-3], 
-#                                                                     condition_list[-4], 
-#                                                                     condition_list[-2],
-#                                                                     condition_list[-1],
-#                                                                     response_url])
+# #         thr = Thread(target=backgroundworker_wordcloud_shape, args=[condition_list[-3], 
+# #                                                                     condition_list[-4], 
+# #                                                                     condition_list[-2],
+# #                                                                     condition_list[-1],
+# #                                                                     response_url])
+# #         thr.start()
+        
+#     if action_id == "dd_vis_trigger_act":
+#         payload = json.loads(data2['payload'])
+#         #obtaining kw_value and appending value to list
+#         kw_value=payload['actions'][0]['value']
+#         condition_list_dd_vis.append(kw_value)
+        
+#         #datetime picker block for startdate that is triggered after text input block
+#         dd_vis_blocks_startdate = [
+    
+# 		{
+#  			"type": "input",
+#  			"element": {
+# 				"type": "datepicker",
+# 				"initial_date": "2022-01-01",
+# 				"placeholder": {
+#  					"type": "plain_text",
+#  					"text": "Select a date",
+#  					"emoji": True
+# 				},
+# 				"action_id": "dd_vis_blocks_startdate_act"
+#  			},
+#  			"label": {
+# 				"type": "plain_text",
+# 				"text": "Please select the startdate for the Visualization",
+# 				"emoji": True
+#  			}
+# 		}
+#  	]
+        
+#         #sending kw_value and language selection dropdown
+#         client.chat_postMessage(channel=channel_id,
+#                                 text="language selection dropdown",
+#                                 blocks=dd_vis_blocks_startdate
+#                                 )
+#     elif action_id == "dd_vis_blocks_startdate_act":
+#         payload = json.loads(data2['payload'])
+#         #obtaining kw_value and appending value to list
+#         kw_value=payload['actions'][0]['selected_date']
+        
+
+#         condition_list_dd_vis.append(kw_value)
+        
+#         #datetime picker block for startdate that is triggered after text input block
+#         dd_vis_blocks_indexdate = [
+#   		{
+#    			"type": "input",
+#    			"element": {
+#   				"type": "datepicker",
+#   				"initial_date": "2022-06-01",
+#   				"placeholder": {
+#    					"type": "plain_text",
+#    					"text": "Please select the index date for the Visualization",
+#    					"emoji": True
+#   				},
+#   				"action_id": "dd_vis_blocks_indexdate_act"
+#    			},
+#    			"label": {
+#   				"type": "plain_text",
+#   				"text": "Please select the index date for the Visualization",
+#   				"emoji": True
+#    			}
+#   		}
+#    	]
+#         #sending kw_value and language selection dropdown
+#         client.chat_postMessage(channel=channel_id,
+#                                 text=f"{kw_value}     {response_url}",
+#                                 blocks=dd_vis_blocks_indexdate
+#                                 )
+    
+#     elif action_id == "dd_vis_blocks_indexdate_act":
+#         payload = json.loads(data2['payload'])
+#         #obtaining kw_value and appending value to list
+#         kw_value=payload['actions'][0]['selected_date']
+#         condition_list_dd_vis.append(kw_value)
+        
+#         # condition_list_dd_vis[-3] is keyword
+#         # condition_list_dd_vis[-2] is start date
+#         # condition_list_dd_vis[-1] is index date
+        
+#         thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
+#                                                            condition_list_dd_vis[-2], 
+#                                                            condition_list_dd_vis[-1], 
+#                                                            response_url, 
+#                                                            channel_id])
 #         thr.start()
         
-    if action_id == "dd_vis_trigger_act":
-        payload = json.loads(data2['payload'])
-        #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['value']
-        condition_list_dd_vis.append(kw_value)
-        
-        #datetime picker block for startdate that is triggered after text input block
-        dd_vis_blocks_startdate = [
-    
-		{
- 			"type": "input",
- 			"element": {
-				"type": "datepicker",
-				"initial_date": "2022-01-01",
-				"placeholder": {
- 					"type": "plain_text",
- 					"text": "Select a date",
- 					"emoji": True
-				},
-				"action_id": "dd_vis_blocks_startdate_act"
- 			},
- 			"label": {
-				"type": "plain_text",
-				"text": "Please select the startdate for the Visualization",
-				"emoji": True
- 			}
-		}
- 	]
-        
-        #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
-                                text="language selection dropdown",
-                                blocks=dd_vis_blocks_startdate
-                                )
-    elif action_id == "dd_vis_blocks_startdate_act":
-        payload = json.loads(data2['payload'])
-        #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['selected_date']
-        
-
-        condition_list_dd_vis.append(kw_value)
-        
-        #datetime picker block for startdate that is triggered after text input block
-        dd_vis_blocks_indexdate = [
-  		{
-   			"type": "input",
-   			"element": {
-  				"type": "datepicker",
-  				"initial_date": "2022-06-01",
-  				"placeholder": {
-   					"type": "plain_text",
-   					"text": "Please select the index date for the Visualization",
-   					"emoji": True
-  				},
-  				"action_id": "dd_vis_blocks_indexdate_act"
-   			},
-   			"label": {
-  				"type": "plain_text",
-  				"text": "Please select the index date for the Visualization",
-  				"emoji": True
-   			}
-  		}
-   	]
-        #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
-                                text=f"{kw_value}     {response_url}",
-                                blocks=dd_vis_blocks_indexdate
-                                )
-    
-    elif action_id == "dd_vis_blocks_indexdate_act":
-        payload = json.loads(data2['payload'])
-        #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['selected_date']
-        condition_list_dd_vis.append(kw_value)
-        
-        # condition_list_dd_vis[-3] is keyword
-        # condition_list_dd_vis[-2] is start date
-        # condition_list_dd_vis[-1] is index date
-        
-        thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
-                                                           condition_list_dd_vis[-2], 
-                                                           condition_list_dd_vis[-1], 
-                                                           response_url, 
-                                                           channel_id])
-        thr.start()
-        
-        client.chat_postMessage(channel=channel_id,
-                                text="dd_vis_blocks_indexdate_act working"
-                                )    
+#         client.chat_postMessage(channel=channel_id,
+#                                 text="dd_vis_blocks_indexdate_act working"
+#                                 )    
         
     
-    else:
-        pass
+#     else:
+#         pass
         
         
     
-    return ' ', 200
+#     return ' ', 200
 
-@app.route('/dd_vis_trigger', methods=['POST'])
-def dd_vis_trigger():
-    data = request.form
-    #we are usging data2 to parse the information
-    data2 = request.form.to_dict()
-    #print(data)
-    user_id = data.get('user_id')
-    channel_id = data.get('channel_id')
-    text = data.get('text')
-    response_url = data.get("response_url")
-    #event = payload.get('event', {})
-    #text = event.get('text')
-    greeting_message = "Processing your request. Please wait."
-    ending_message = "Process executed successfully"
+# @app.route('/dd_vis_trigger', methods=['POST'])
+# def dd_vis_trigger():
+#     data = request.form
+#     #we are usging data2 to parse the information
+#     data2 = request.form.to_dict()
+#     #print(data)
+#     user_id = data.get('user_id')
+#     channel_id = data.get('channel_id')
+#     text = data.get('text')
+#     response_url = data.get("response_url")
+#     #event = payload.get('event', {})
+#     #text = event.get('text')
+#     greeting_message = "Processing your request. Please wait."
+#     ending_message = "Process executed successfully"
 
-    #utilizing threading
-    #thr = Thread(target=backgroundworker, args=[text,response_url])
-    #thr.start()
+#     #utilizing threading
+#     #thr = Thread(target=backgroundworker, args=[text,response_url])
+#     #thr.start()
 
-    #this creates the text prompt in slack block kit
-    dd_vis_trigger_block = [
-        {
-           "type": "divider"
-           },
-        {
-            "dispatch_action": True,
-            "type": "input",
-            "element": {
-                "type": "plain_text_input",
-                "action_id": "dd_vis_trigger_act"
-            },
-            "label": {
-                "type": "plain_text",
-                "text": "Please type the keyword for the visualization ",
-                "emoji": True
-            }
-        }
-    ]
+#     #this creates the text prompt in slack block kit
+#     dd_vis_trigger_block = [
+#         {
+#            "type": "divider"
+#            },
+#         {
+#             "dispatch_action": True,
+#             "type": "input",
+#             "element": {
+#                 "type": "plain_text_input",
+#                 "action_id": "dd_vis_trigger_act"
+#             },
+#             "label": {
+#                 "type": "plain_text",
+#                 "text": "Please type the keyword for the visualization ",
+#                 "emoji": True
+#             }
+#         }
+#     ]
 
-    client.chat_postMessage(channel=channel_id, 
-                                        text="Visualization:  ",
-                                        blocks = dd_vis_trigger_block
-                                        )
+#     client.chat_postMessage(channel=channel_id, 
+#                                         text="Visualization:  ",
+#                                         blocks = dd_vis_trigger_block
+#                                         )
 
 
-    #returning empty string with 200 response
-    return '', 200
+#     #returning empty string with 200 response
+#     return '', 200
+# @app.route('/dd_vis_trigger', methods=['POST'])
+# def dd_vis_trigger():
+#     data = request.form
+#     #we are usging data2 to parse the information
+#     data2 = request.form.to_dict()
+#     #print(data)
+#     user_id = data.get('user_id')
+#     channel_id = data.get('channel_id')
+#     text = data.get('text')
+#     response_url = data.get("response_url")
+#     #event = payload.get('event', {})
+#     #text = event.get('text')
+#     greeting_message = "Processing your request. Please wait."
+#     ending_message = "Process executed successfully"
+
+#     #utilizing threading
+#     #thr = Thread(target=backgroundworker, args=[text,response_url])
+#     #thr.start()
+
+#     #this creates the text prompt in slack block kit
+#     dd_vis_trigger_block = [
+#         {
+#            "type": "divider"
+#            },
+#         {
+#             "dispatch_action": True,
+#             "type": "input",
+#             "element": {
+#                 "type": "plain_text_input",
+#                 "action_id": "dd_vis_trigger_act"
+#             },
+#             "label": {
+#                 "type": "plain_text",
+#                 "text": "Please type the keyword for the visualization ",
+#                 "emoji": True
+#             }
+#         }
+#     ]
+
+#     client.chat_postMessage(channel=channel_id, 
+#                                         text="Visualization:  ",
+#                                         blocks = dd_vis_trigger_block
+#                                         )
+
+
+#     #returning empty string with 200 response
+#     return '', 200
 
 #######################################################__________________________________
 
