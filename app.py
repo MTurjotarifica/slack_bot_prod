@@ -82,7 +82,7 @@ def load_dd_df():
 			   )
     
     #this is the query to be performed #edit st 2023-03-07
-    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE') AND (date > '2023-01-01');"
+    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE');"
     
     df_dd_raw = pd.read_sql(sqlalctext(stmt), connection) #edit st 2023-03-07
     df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
@@ -1016,7 +1016,7 @@ def handle_hello_request():
     channel_id = data.get('channel_id')
     # Execute the /hello command function
     slack_app.client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="it works!", )
-    client.chat_postMessage(response_type= "in_channel", channel='#slack_bot_prod', text="2nd it works!", )
+    client.chat_postMessage(response_type= "in_channel", channel='#slack_bot_prod', text=f"{df_raw.date.max()} 2nd it works! {df_raw.date.min()}", )
     return "Hello world1" , 200
 
 
