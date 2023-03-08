@@ -599,7 +599,11 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
     requests.post(response_url,data=json.dumps(payload))
 
 
+#creating an empty list for condition branching on wordcloud
+condition_list = []
 
+#creating an empty list for condition branching on dd_vis_trigger
+condition_list_dd_vis = []
 
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
 def interactive_trigger():
