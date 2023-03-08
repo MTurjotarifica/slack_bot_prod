@@ -33,6 +33,7 @@ from plotly.subplots import make_subplots
 import plotly.express as px
 import matplotlib.dates as mdates
 import slack
+import scipy.signal
 
 from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy import text as sqlalctext #edit st 2023-03-07
