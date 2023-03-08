@@ -626,10 +626,10 @@ def interactive_trigger():
     
 #     #FOR INTERACTIVE BLOCKKITS data2 and json.loads parsing seems to work
 #     #but not data.get("response_url") SYNTAX. It returns NONE
-#     response_url = json.loads(data2['payload'])['response_url']
-#     actions = data.get("actions")
-#     actions_value = data.get("actions.value")
-#     action_id = json.loads(data2['payload'])['actions'][0]['action_id']
+    response_url = json.loads(data2['payload'])['response_url']
+    actions = data.get("actions")
+    actions_value = data.get("actions.value")
+    action_id = json.loads(data2['payload'])['actions'][0]['action_id']
 #     #event = payload.get('event', {})
 #     #text = event.get('text')
 #     greeting_message = "Processing your request. Please wait."
