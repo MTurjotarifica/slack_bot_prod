@@ -43,6 +43,16 @@ from vis_functions import *
 load_dotenv()
 
 
+# Initialize the Flask app and the Slack app
+app = Flask(__name__)
+slack_app = App(
+    token=os.environ["SLACK_BOT_TOKEN"],
+    signing_secret=os.environ["SLACK_SIGNING_SECRET"]
+)
+
+
+client = slack_app.client
+
 ##################################################################
 #function to create load difital demand as dataframe
 def load_dd_df():
