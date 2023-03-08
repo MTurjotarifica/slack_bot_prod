@@ -612,7 +612,7 @@ def interactive_trigger():
     data = request.form
     data2 = request.form.to_dict()
     user_id = data.get('user_id')
-    channel_id = data.get('channel_id')
+    channel_id = json.loads(data2['payload'])['container']['channel_id']
     text = data.get('text')
     #response_url = data.get("response_url")
     #print(response_url)
@@ -898,10 +898,13 @@ def interactive_trigger():
  	]
         
         #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
-                                text="language selection dropdown",
-                                blocks=dd_vis_blocks_startdate
-                                )
+	client.chat_postMessage(channel="#slack_bot_prod", 
+				text= f"{channel_id} language selection dropdown",
+                                blocks=dd_vis_blocks_startdate )
+#         client.chat_postMessage(channel="#slack_bot_prod",
+#                                 text="language selection dropdown",
+#                                 blocks=dd_vis_blocks_startdate
+#                                 )
     elif action_id == "dd_vis_blocks_startdate_act":
         payload = json.loads(data2['payload'])
         #obtaining kw_value and appending value to list
@@ -932,7 +935,7 @@ def interactive_trigger():
   		}
    	]
         #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
+        client.chat_postMessage(channel="#slack_bot_prod",
                                 text=f"{kw_value}     {response_url}",
                                 blocks=dd_vis_blocks_indexdate
                                 )
@@ -954,7 +957,7 @@ def interactive_trigger():
                                                            channel_id])
         thr.start()
         
-        client.chat_postMessage(channel=channel_id,
+        client.chat_postMessage(channel="#slack_bot_prod",
                                 text="dd_vis_blocks_indexdate_act working"
                                 )    
         
