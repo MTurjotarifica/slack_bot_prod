@@ -620,8 +620,8 @@ def interactive_trigger():
     #response_url = data.get("response_url")
     #print(response_url)
 
-    client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="interactive-endpoint works", )
-    
+    client.chat_postMessage(response_type= "in_channel", channel="#slack_bot_prod", text='inter-active works', )
+
     
 #     #FOR INTERACTIVE BLOCKKITS data2 and json.loads parsing seems to work
 #     #but not data.get("response_url") SYNTAX. It returns NONE
@@ -1012,53 +1012,53 @@ def interactive_trigger():
 
 #     #returning empty string with 200 response
 #     return '', 200
-# @app.route('/dd_vis_trigger', methods=['POST'])
-# def dd_vis_trigger():
-#     data = request.form
-#     #we are usging data2 to parse the information
-#     data2 = request.form.to_dict()
-#     #print(data)
-#     user_id = data.get('user_id')
-#     channel_id = data.get('channel_id')
-#     text = data.get('text')
-#     response_url = data.get("response_url")
-#     #event = payload.get('event', {})
-#     #text = event.get('text')
-#     greeting_message = "Processing your request. Please wait."
-#     ending_message = "Process executed successfully"
+@app.route('/dd_vis_trigger', methods=['POST'])
+def dd_vis_trigger():
+    data = request.form
+    #we are usging data2 to parse the information
+    data2 = request.form.to_dict()
+    #print(data)
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+    text = data.get('text')
+    response_url = data.get("response_url")
+    #event = payload.get('event', {})
+    #text = event.get('text')
+    greeting_message = "Processing your request. Please wait."
+    ending_message = "Process executed successfully"
 
-#     #utilizing threading
-#     #thr = Thread(target=backgroundworker, args=[text,response_url])
-#     #thr.start()
+    #utilizing threading
+    #thr = Thread(target=backgroundworker, args=[text,response_url])
+    #thr.start()
 
-#     #this creates the text prompt in slack block kit
-#     dd_vis_trigger_block = [
-#         {
-#            "type": "divider"
-#            },
-#         {
-#             "dispatch_action": True,
-#             "type": "input",
-#             "element": {
-#                 "type": "plain_text_input",
-#                 "action_id": "dd_vis_trigger_act"
-#             },
-#             "label": {
-#                 "type": "plain_text",
-#                 "text": "Please type the keyword for the visualization ",
-#                 "emoji": True
-#             }
-#         }
-#     ]
+    #this creates the text prompt in slack block kit
+    dd_vis_trigger_block = [
+        {
+           "type": "divider"
+           },
+        {
+            "dispatch_action": True,
+            "type": "input",
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "dd_vis_trigger_act"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Please type the keyword for the visualization ",
+                "emoji": True
+            }
+        }
+    ]
 
-#     client.chat_postMessage(channel=channel_id, 
-#                                         text="Visualization:  ",
-#                                         blocks = dd_vis_trigger_block
-#                                         )
+    client.chat_postMessage(channel=channel_id, 
+                                        text="Visualization:  ",
+                                        blocks = dd_vis_trigger_block
+                                        )
 
 
-#     #returning empty string with 200 response
-#     return '', 200
+    #returning empty string with 200 response
+    return '', 200
 
 #######################################################__________________________________
 
