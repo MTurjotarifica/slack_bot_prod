@@ -99,185 +99,143 @@ df_raw = load_dd_df()
 ##################################################________________________________________
 
 #################################################
-def add_indexing(df,var,index_date):
-    '''
-    Adding indexes to the var in a dataframe 
-    so that we don't get values between 0 to 1
-    and instead obtain results in our own scale
-    
-    i.e if vl_value in 1st Jan 2022 (index_date) in 0.01
-    then we can set vl_value_ref to the vl_value in that row
-    and then if we find a vl_value in any other date 
-    we compare this to vl_value_ref by scaling it using vl_value_ref 
-    (vl_value/vl_value_ref * 100) to obtain value for vl_value_index column
-    (always grouped by keyword, country, category)
-    
-    Parameters:
-        df(dataframe)
-        
-        var(str) : string of a numeric column of the dataframe 
-        
-        index_date(str): date string
-    
-    Returns:
-        df: dataframe with a new column which is called var_index
-        i.e vl_value_index
-    '''
-    var_ref = var +'_ref'                                      #variable for index computation
-    var_new = var +'_index'                                    #new index variable to be added to df  
-    df_ref = df[df['date']==index_date]                        #create reference df with values from indexdate
-    df_ref = df_ref.rename(columns={var : var_ref})            #rename to avoid confusion
-    #Add values of indexdate to original dataframe and compute index values
-    df_w_index = pd.merge(df, df_ref[['keyword',
-                                      'country',
-                                      'gt_category',
-                                      var_ref]],
-                          how="left",
-                          on=['keyword',
-                              'country',
-                              'gt_category'
-                             ])
-    df_w_index[var_new] = (df_w_index[var]/df_w_index[var_ref])*100
+# VIS FUNCTIONS INSERT
+def add_indexing(df, var, index_date):
+	var_ref = var + "_ref"  # variable for index computation
+    var_new = var + "_index"  # new index variable to be added to df
+    df_ref = df[
+        df["date"] == index_date
+    ]  # create reference df with values from indexdate
+    df_ref = df_ref.rename(columns={var: var_ref})  # rename to avoid confusion
+    # Add values of indexdate to original dataframe and compute index values
+    df_w_index = pd.merge(
+        df,
+        df_ref[["keyword", "country", "gt_category", var_ref]],
+        how="left",
+        on=["keyword", "country", "gt_category"],
+    )
+    df_w_index[var_new] = (df_w_index[var] / df_w_index[var_ref]) * 100
     return df_w_index
 
-
-#indexing avg function
-def add_indexing_by_avg(df,var):
-    '''
-    Adding indexes to the var in a dataframe 
+# indexing avg function
+def add_indexing_by_avg(df, var):
+    """
+    Adding indexes to the var in a dataframe
     so that we don't get values between 0 to 1
     and instead obtain results in our own scale
     (always grouped by keyword, country, category)
-    
-    i.e 
+
+    i.e
     here we are obtaining the mean value for a given keyword, country, category combination
     and using that as a reference to create values for the var_index_avg column
-    
+
     Parameters:
         df(dataframe)
-        
-        var(str) : string of a numeric column of the dataframe 
-    
+
+        var(str) : string of a numeric column of the dataframe
+
     Returns:
         df: dataframe with a new column which is called var_index_avg
         i.e vl_value_index_avg
-    '''
-    var_ref = var +'_ref_avg'
-    var_new = var +'_index_avg'
+    """
+	var_ref = var + "_ref_avg"
+    var_new = var + "_index_avg"
     df_index = df.copy()
-    df_index[var_ref] = df_index.groupby(['keyword',
-                                          'country',
-                                          'gt_category'
-                                         ])[var].transform(lambda x: x.mean())    #compute moving average
-    df_index[var_new] = (df_index[var]/df_index[var_ref])*100
+    df_index[var_ref] = df_index.groupby(["keyword", "country", "gt_category"])[
+        var
+    ].transform(
+        lambda x: x.mean()
+    )  # compute moving average
+    df_index[var_new] = (df_index[var] / df_index[var_ref]) * 100
     return df_index
 
 
-
-#moving average function
-def add_ma(df,var,window):
-    '''
+# moving average function
+def add_ma(df, var, window):
+    """
     Adding moving avg column to the dataframe
     (always grouped by keyword, country, category)
-        
+
     Parameters:
         df(dataframe)
-        
+
         var(str) : string of a numeric column of the dataframe
-        
-        window(int): moving average window 
+
+        window(int): moving average window
         i.e if 7 (will calculate from the 7th day and obtain NAN for days 1 to 6)
-        
-    
+
+
     Returns:
         df: dataframe with a new column which is called var_ma_{windowint}
         i.e vl_value_ma7
-    '''
+    """
+	
+    var_new = var + "_ma"  # new ma variable to be added to df
+    df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
+    df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(
+        lambda x: x.rolling(window).mean()
+    )  # compute moving average
 
-    
-    var_new = var + '_ma'                                       #new ma variable to be added to df
-    df = df.sort_values(by=['keyword',
-                            'gt_category',
-                            'country',
-                            'date'
-                           ])
-    df[var_new] = df.groupby(['keyword',
-                              'country',
-                              'gt_category'
-                             ])[var].transform(lambda x: x.rolling(window).mean())    #compute moving average
-    
-    df = df.rename(columns={var_new: var_new+str(window)})
+    df = df.rename(columns={var_new: var_new + str(window)})
     return df
 
-
-#standard deviation function
-def add_std(df,var,window):
-    '''
+# standard deviation function
+def add_std(df, var, window):
+    """
     Adding standard_deviation of the moving average to the dataframe in a new column
     (always grouped by keyword, country, category)
-    
+
     Parameters:
         df(dataframe)
-        
+
         var(str) : string of a numeric column of the dataframe
-        
-        window(int): moving average window 
+
+        window(int): moving average window
         i.e if 7 (will calculate from the 7th day and obtain NAN for days 1 to 6)
-        
-    
+
+
     Returns:
         df: dataframe with a new column which is called var_std_{windowint}
         i.e vl_value_std7
-    '''
-        
-    var_new = var + '_std'                                       #new ma variable to be added to df
-    df = df.sort_values(by=['keyword',
-                            'gt_category',
-                            'country',
-                            'date'
-                           ])
-    df[var_new] = df.groupby(['keyword',
-                              'country',
-                              'gt_category'
-                             ])[var].transform(lambda x: 2*x.rolling(window).std())    #compute moving average
-    df = df.rename(columns={var_new: var_new+str(window)})
+    """
+	
+    var_new = var + "_std"  # new ma variable to be added to df
+    df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
+    df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(
+        lambda x: 2 * x.rolling(window).std()
+    )  # compute moving average
+    df = df.rename(columns={var_new: var_new + str(window)})
     return df
 
 
-#smoother function
-def add_smoother(df,var,cutoff):
-    '''
+# smoother function
+def add_smoother(df, var, cutoff):
+    """
     Adding smooth values for var in the dataframe in a new column
     (always grouped by keyword, country, category)
-    
+
     Parameters:
         df(dataframe)
-        
+
         var(str) : string of a numeric column of the dataframe
-        
+
         cutoff(float): cutoff value for smoothing and expects values in between 0 to 1
-        degree of smoothing 
+        degree of smoothing
         i.e we are currently choosing 0.02
         refernce: https://swharden.com/blog/2020-09-23-signal-filtering-in-python/
-        
-    
+
+
     Returns:
         df: dataframe with a new column which is called var_smooth
         i.e vl_value_smooth
-    '''
+    """
     b, a = scipy.signal.butter(3, cutoff)
-    var_new = var + '_smooth'                                       #new ma variable to be added to df
-    df = df.sort_values(by=['keyword',
-                            'gt_category',
-                            'country',
-                            'date'
-                           ])
-    df[var_new] = df.groupby(['keyword',
-                              'country',
-                              'gt_category'
-                             ])[var].transform(lambda x: scipy.signal.filtfilt(b, a, x))    #compute moving average
+    var_new = var + "_smooth"  # new ma variable to be added to df
+    df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
+    df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(
+        lambda x: scipy.signal.filtfilt(b, a, x)
+    )  # compute moving average
     return df
-
 
 #######################################_________________________
 
@@ -509,8 +467,8 @@ def deepl_trigger_with_lang():
 #######################################
 
 def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_id):
-
-    missing_kw_block = [
+	
+	missing_kw_block = [
 		{
 			"type": "divider"
 		},
@@ -534,16 +492,17 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
 				}
 			]
 		}
-	]        
-
+	]
+	
     #NEW ADDITION
     if text.lower() not in df_raw.keyword.unique().tolist():
         client.chat_postMessage(channel=channel_id,
                                 text="Keyword not in Digital Demand Database. Please try the command again with a differenrent keyword. ",
                                 blocks=missing_kw_block
-                                            )
+								)	
     else:
         pass
+	
     
     #we are creating manuals parameter dictionary for function values at the moment
     params = {'key': f'{text.lower()}',
@@ -584,7 +543,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
             a local copy of the visualization in the format you want (svg, png etc)
             saves it in desktop
         '''
-        
+		
         df_key = df_raw[(df_raw.keyword == f'{params.get("key")}')\
                         &(df_raw.country == f'{params.get("geo")}')\
                         &(df_raw.gt_category == int(f'{params.get("cat")}'))]
@@ -607,7 +566,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
                 opacity = 0.3,
                 line=dict(color='#024D83',
                           width=4),
-                showlegend=True
+				showlegend=True
         ))
         #creating the trendline values
         df_trend = df[['date',var_new]]         #i.e we need date and vl_value 
@@ -701,7 +660,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
         elif out_type == 'html':
             fig.write_html(os.path.expanduser(f"~/Desktop/{key}_single_timeseries.html"))
         else:
-            container_string=os.environ["CONNECTION_STRING"]
+			container_string=os.environ["CONNECTION_STRING"]
             storage_account_name = "storage4slack"
             container_name = "visfunc"
             blob_service_client = BlobServiceClient.from_connection_string (container_string) 
@@ -741,8 +700,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
         # Open the image file and read its contents
         with open(filename, 'rb') as file:
             file_data = file.read()
-        
-#         filename=f"{text}.png"
+        # filename=f"{text}.png"
         response = client.files_upload(channels=channel_id,
                                         file=file_data,
                                         initial_comment="Visualization: ")
@@ -785,6 +743,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
                             )
     
     requests.post(response_url,data=json.dumps(payload))
+	return 'success', 200
 
 
 #creating an empty list for condition branching on wordcloud
@@ -797,7 +756,7 @@ condition_list_dd_vis = []
 # indendation errors are being caused by spyder (the ide I use)
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
 def interactive_trigger():
-
+	
     data = request.form
     data2 = request.form.to_dict()
     user_id = data.get('user_id')
