@@ -2,7 +2,8 @@
 import os
 from slack_bolt import App
 from slack_bolt.adapter.flask import SlackRequestHandler
-from flask import Flask, request, make_response, SQLAlchemy
+from flask import Flask, request, make_response
+from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from slack_sdk import WebClient
 from threading import Thread
