@@ -102,24 +102,22 @@ df_raw = load_dd_df()
 # VIS FUNCTIONS INSERT
 def add_indexing(df, var, index_date):
 	var_ref = var + "_ref"  # variable for index computation
-    var_new = var + "_index"  # new index variable to be added to df
-    df_ref = df[
-        df["date"] == index_date
-    ]  # create reference df with values from indexdate
-    df_ref = df_ref.rename(columns={var: var_ref})  # rename to avoid confusion
-    # Add values of indexdate to original dataframe and compute index values
-    df_w_index = pd.merge(
-        df,
-        df_ref[["keyword", "country", "gt_category", var_ref]],
-        how="left",
-        on=["keyword", "country", "gt_category"],
-    )
-    df_w_index[var_new] = (df_w_index[var] / df_w_index[var_ref]) * 100
-    return df_w_index
+	var_new = var + "_index"  # new index variable to be added to df
+	df_ref = df[df["date"] == index_date]  # create reference df with values from indexdate
+	df_ref = df_ref.rename(columns={var: var_ref})  # rename to avoid confusion
+	# Add values of indexdate to original dataframe and compute index values
+	df_w_index = pd.merge(
+		df,
+		df_ref[["keyword", "country", "gt_category", var_ref]],
+		how="left",
+        on=["keyword", "country", "gt_category"])
+	df_w_index[var_new] = (df_w_index[var] / df_w_index[var_ref]) * 100
+	return df_w_index
+
 
 # indexing avg function
 def add_indexing_by_avg(df, var):
-    """
+	"""
     Adding indexes to the var in a dataframe
     so that we don't get values between 0 to 1
     and instead obtain results in our own scale
@@ -141,11 +139,7 @@ def add_indexing_by_avg(df, var):
 	var_ref = var + "_ref_avg"
     var_new = var + "_index_avg"
     df_index = df.copy()
-    df_index[var_ref] = df_index.groupby(["keyword", "country", "gt_category"])[
-        var
-    ].transform(
-        lambda x: x.mean()
-    )  # compute moving average
+    df_index[var_ref] = df_index.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: x.mean())  # compute moving average
     df_index[var_new] = (df_index[var] / df_index[var_ref]) * 100
     return df_index
 
@@ -172,10 +166,8 @@ def add_ma(df, var, window):
 	
     var_new = var + "_ma"  # new ma variable to be added to df
     df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
-    df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(
-        lambda x: x.rolling(window).mean()
-    )  # compute moving average
-
+    df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: x.rolling(window).mean())  # compute moving average
+	
     df = df.rename(columns={var_new: var_new + str(window)})
     return df
 
@@ -198,12 +190,9 @@ def add_std(df, var, window):
         df: dataframe with a new column which is called var_std_{windowint}
         i.e vl_value_std7
     """
-	
     var_new = var + "_std"  # new ma variable to be added to df
     df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
-    df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(
-        lambda x: 2 * x.rolling(window).std()
-    )  # compute moving average
+    df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: 2 * x.rolling(window).std())  # compute moving average
     df = df.rename(columns={var_new: var_new + str(window)})
     return df
 
@@ -232,9 +221,7 @@ def add_smoother(df, var, cutoff):
     b, a = scipy.signal.butter(3, cutoff)
     var_new = var + "_smooth"  # new ma variable to be added to df
     df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
-    df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(
-        lambda x: scipy.signal.filtfilt(b, a, x)
-    )  # compute moving average
+    df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: scipy.signal.filtfilt(b, a, x))  # compute moving average
     return df
 
 #######################################_________________________
@@ -251,7 +238,7 @@ def handle_slash_command():
 
     # Execute the appropriate function based on the command
     if command == "/example":
-        client.chat_postMessage(channel='#slack_bot_prod', text="it worksssss!")
+        client.chat_postMessage(channel='#slack_bot_prod', text=f"it worksssss! {str(df_raw.date.max())}")
         response_text = handle_example_command(text)
     else:
         response_text = "Unknown command: {}".format(command)
@@ -512,8 +499,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
               'index': True,
               'indexdate': f'{index_date}',
               'font_use': 'Roboto Mono Light for Powerline',
-              'out_type': 'png'
-             }
+              'out_type': 'png'}
     
     #function that produces and saves the vis
     def single(key,geo,cat,startdate,index,indexdate,font_use,out_type):
@@ -547,18 +533,18 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
         df_key = df_raw[(df_raw.keyword == f'{params.get("key")}')\
                         &(df_raw.country == f'{params.get("geo")}')\
                         &(df_raw.gt_category == int(f'{params.get("cat")}'))]
-        if params.get("index")==True: 
+        if params.get("index")==True:
             df_key = add_indexing(df_key,'vl_value',f'{params.get("indexdate")}')
             var_new = 'vl_value_index'
         else:
             var_new = 'vl_value'
             #running the functions we created to create moving average, smoother
         df_key = add_ma(df_key,var_new,14)
-        df_key = add_smoother(df_key,var_new,0.02) 
-        df = df_key[df_key.date>=f'{params["startdate"]}']
+        df_key = add_smoother(df_key,var_new,0.02)
+		df = df_key[df_key.date>=f'{params["startdate"]}']
         fig = go.Figure()
         fig.add_trace(
-            go.Scatter( 
+            go.Scatter(
                 x=df.date, 
                 y=df[var_new],
                 name='original', 
@@ -610,7 +596,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
                 opacity = 1,
                 line=dict(color='purple',
                           width=6),
-                showlegend=True
+				showlegend=True
         ))
         fig.update_layout(
             xaxis={'title': None,
@@ -655,24 +641,19 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
             width = 1920,
             height = 1080     
         )
-        if out_type == 'svg':
-            fig.write_image(os.path.expanduser(f"~/Desktop/{key}_single_timeseries.svg"))
-        elif out_type == 'html':
-            fig.write_html(os.path.expanduser(f"~/Desktop/{key}_single_timeseries.html"))
-        else:
-			container_string=os.environ["CONNECTION_STRING"]
-            storage_account_name = "storage4slack"
-            container_name = "visfunc"
-            blob_service_client = BlobServiceClient.from_connection_string (container_string) 
-            container_client = blob_service_client.get_container_client(container_name)
-            blob_name = f"{text}.png"
-            filename = f"{text}.png"
-            
-            with open(filename, "rb") as data:
-                blob_client.upload_blob(data)
+		container_string=os.environ["CONNECTION_STRING"]
+		storage_account_name = "storage4slack"
+		container_name = "visfunc"
+		blob_service_client = BlobServiceClient.from_connection_string (container_string) 
+		container_client = blob_service_client.get_container_client(container_name)
+		blob_name = f"{text}.png"
+		filename = f"{text}.png"
+		    
+		with open(filename, "rb") as data:
+			blob_client.upload_blob(data)
                 
-#             fig.write_image(os.path.expanduser(f"{text}.png"))
-            
+		# fig.write_image(os.path.expanduser(f"{text}.png"))
+		    
         return 'vis completed'
     
     #this is running from vis_functions.py
@@ -686,7 +667,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
         font_use = 'Roboto Mono Light for Powerline',
         out_type = 'png'
     )
-    
+	
     #payload is required to to send second message after task is completed
     payload = {"text":"your task is complete",
                 "username": "bot"}
@@ -702,8 +683,8 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
             file_data = file.read()
         # filename=f"{text}.png"
         response = client.files_upload(channels=channel_id,
-                                        file=file_data,
-                                        initial_comment="Visualization: ")
+									   file=file_data,
+									   initial_comment="Visualization: ")
         assert response["file"]  # the uploaded file
     except SlackApiError as e:
         # You will get a SlackApiError if "ok" is False
@@ -739,12 +720,10 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
     #sending kw_value and language selection dropdown
     client.chat_postMessage(channel=channel_id,
                             text="sending kw_value",
-                            blocks=context_block
-                            )
-    
+                            blocks=context_block)
+	
     requests.post(response_url,data=json.dumps(payload))
-	return 'success', 200
-
+	return 'success backgroundworker 3 ran', 200
 
 #creating an empty list for condition branching on wordcloud
 condition_list = []
@@ -776,7 +755,6 @@ def interactive_trigger():
         
         #datetime picker block for startdate that is triggered after text input block
         dd_vis_blocks_startdate = [
-    
 		{
  			"type": "input",
  			"element": {
@@ -795,10 +773,10 @@ def interactive_trigger():
 				"emoji": True
  			}
 		}]
-        
+		
         #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel="#slack_bot_prod", 
-                                text= f"{channel_id} language selection dropdown",
+        client.chat_postMessage(channel="#slack_bot_prod",
+								text= f"{channel_id} language selection dropdown",
                                 blocks=dd_vis_blocks_startdate )
         
     elif action_id == "dd_vis_blocks_startdate_act":
@@ -831,7 +809,7 @@ def interactive_trigger():
    	]
         #sending kw_value and language selection dropdown
         client.chat_postMessage(channel="#slack_bot_prod",
-                                text=f"{kw_value}     {response_url}",
+								text=f"{kw_value}     {response_url}",
                                 blocks=dd_vis_blocks_indexdate
                                 )
     
@@ -845,24 +823,23 @@ def interactive_trigger():
         # condition_list_dd_vis[-2] is start date
         # condition_list_dd_vis[-1] is index date
         
-        thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
-                                                           condition_list_dd_vis[-2], 
-                                                           condition_list_dd_vis[-1], 
-                                                           response_url, 
+        thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3],
+														   condition_list_dd_vis[-2],
+														   condition_list_dd_vis[-1],
+                                                           response_url,
                                                            channel_id])
         thr.start()
+		
         
         client.chat_postMessage(channel="#slack_bot_prod",
-                                text="dd_vis_blocks_indexdate_act working"
-                                )    
+								text="dd_vis_blocks_indexdate_act working")
         
-    
     else:
-        pass
+		pass
         
         
     
-    return ' ', 200
+    return 'backgroundworker3 executed successfully', 200
 
 # @app.route('/dd_vis_trigger', methods=['POST'])
 # def dd_vis_trigger():
@@ -950,14 +927,12 @@ def dd_vis_trigger():
         }
     ]
 
-    client.chat_postMessage(channel=channel_id, 
-                                        text="Visualization:  ",
-                                        blocks = dd_vis_trigger_block
-                                        )
-
-
+    client.chat_postMessage(channel=channel_id,
+							text="Visualization:  ",
+							blocks = dd_vis_trigger_block)
+	
     #returning empty string with 200 response
-    return '', 200
+    return 'dd_vis trigger ran successfully', 200
 
 #######################################################__________________________________
 
