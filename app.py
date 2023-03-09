@@ -61,7 +61,6 @@ def load_dd_df():
     loads digital demand dataframe for all dates
     where country is DE
     and gt_category 13
-
     returns:
         df_dd_raw (Dataframe)
     '''    
@@ -512,7 +511,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
     # NEW ADDITION
     if text.lower() not in df_raw.keyword.unique().tolist():
         client.chat_postMessage(
-            channel="#asb_dd_top10_changes",
+            channel=channel_id,
             text="Keyword not in Digital Demand Database. Please try the command again with a differenrent keyword. ",
             blocks=missing_kw_block,
         )
@@ -669,17 +668,17 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
             width=1920,
             height=1080,
         )
-        if out_type == "svg":
-            fig.write_image(
-                os.path.expanduser(f"~/Desktop/{key}_single_timeseries.svg")
-            )
-        elif out_type == "html":
-            fig.write_html(
-                os.path.expanduser(f"~/Desktop/{key}_single_timeseries.html")
-            )
-        else:
-            fig.write_image(os.path.expanduser(f"{text}.png"))
-
+        container_string=os.environ["CONNECTION_STRING"]
+        storage_account_name = "storage4slack"
+	container_name = "visfunc"
+	blob_service_client = BlobServiceClient.from_connection_string (container_string) 
+	container_client = blob_service_client.get_container_client(container_name)
+	blob_name = f"{text}.png"
+	filename = f"{text}.png"
+            
+	with open(filename, "rb") as data:
+                blob_client.upload_blob(data)
+		
         return "vis completed"
 
     # this is running from vis_functions.py
@@ -699,10 +698,18 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
 
     # uploading the file to slack using bolt syntax for py
     try:
-        filename = f"{text}.png"
+	# Download the blob as binary data
+        blob_client = blob_service_client.get_blob_client(container_name, blob_name)
+        blob_data = blob_client.download_blob().readall()
+        
+        # Open the image file and read its contents
+        with open(filename, 'rb') as file:
+            file_data = file.read()
+        
+#         filename = f"{text}.png"
         response = client.files_upload(
-            channels="#asb_dd_top10_changes",
-            file=filename,
+            channels=channel_id,
+            file=file_data,
             initial_comment="Visualization: ",
         )
         assert response["file"]  # the uploaded file
@@ -737,17 +744,135 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
 
     # sending kw_value and language selection dropdown
     client.chat_postMessage(
-        channel="#asb_dd_top10_changes", text="", blocks=context_block
+        channel=channel_id, text="", blocks=context_block
     )
 
     requests.post(response_url, data=json.dumps(payload))
 
+#creating an empty list for condition branching on wordcloud
+condition_list = []
+
+#creating an empty list for condition branching on dd_vis_trigger
+condition_list_dd_vis = []
+
+#######################################----------------------------------------------
 
 
-#######################################
 
+################################################
+# st edit mar 08, 2023 fixed indentation using vs code
+# indendation errors are being caused by spyder (the ide I use)
+@app.route('/slack/interactive-endpoint', methods=['GET','POST'])
+def interactive_trigger():
 
+    data = request.form
+    data2 = request.form.to_dict()
+    user_id = data.get('user_id')
+    channel_id = json.loads(data2['payload'])['container']['channel_id']
+    text = data.get('text')
 
+    response_url = json.loads(data2['payload'])['response_url']
+    actions = data.get("actions")
+    actions_value = data.get("actions.value")
+    action_id = json.loads(data2['payload'])['actions'][0]['action_id']
+
+    if action_id == "dd_vis_trigger_act":
+        payload = json.loads(data2['payload'])
+        #obtaining kw_value and appending value to list
+        kw_value=payload['actions'][0]['value']
+        condition_list_dd_vis.append(kw_value)
+        
+        #datetime picker block for startdate that is triggered after text input block
+        dd_vis_blocks_startdate = [
+    
+		{
+ 			"type": "input",
+ 			"element": {
+				"type": "datepicker",
+				"initial_date": "2022-01-01",
+				"placeholder": {
+ 					"type": "plain_text",
+ 					"text": "Select a date",
+ 					"emoji": True
+				},
+				"action_id": "dd_vis_blocks_startdate_act"
+ 			},
+ 			"label": {
+				"type": "plain_text",
+				"text": "Please select the startdate for the Visualization",
+				"emoji": True
+ 			}
+		}]
+        
+        #sending kw_value and language selection dropdown
+        client.chat_postMessage(channel="#slack_bot_prod", 
+                                text= f"{channel_id} language selection dropdown",
+                                blocks=dd_vis_blocks_startdate )
+        
+    elif action_id == "dd_vis_blocks_startdate_act":
+        payload = json.loads(data2['payload'])
+        #obtaining kw_value and appending value to list
+        kw_value=payload['actions'][0]['selected_date']
+        
+        condition_list_dd_vis.append(kw_value)
+        
+        #datetime picker block for startdate that is triggered after text input block
+        dd_vis_blocks_indexdate = [
+  		{
+   			"type": "input",
+   			"element": {
+  				"type": "datepicker",
+  				"initial_date": "2022-06-01",
+  				"placeholder": {
+   					"type": "plain_text",
+   					"text": "Please select the index date for the Visualization",
+   					"emoji": True
+  				},
+  				"action_id": "dd_vis_blocks_indexdate_act"
+   			},
+   			"label": {
+  				"type": "plain_text",
+  				"text": "Please select the index date for the Visualization",
+  				"emoji": True
+   			}
+  		}
+   	]
+        #sending kw_value and language selection dropdown
+        client.chat_postMessage(channel="#slack_bot_prod",
+                                text=f"{kw_value}     {response_url}",
+                                blocks=dd_vis_blocks_indexdate
+                                )
+    
+    elif action_id == "dd_vis_blocks_indexdate_act":
+        payload = json.loads(data2['payload'])
+        #obtaining kw_value and appending value to list
+        kw_value=payload['actions'][0]['selected_date']
+        condition_list_dd_vis.append(kw_value)
+        
+        # condition_list_dd_vis[-3] is keyword
+        # condition_list_dd_vis[-2] is start date
+        # condition_list_dd_vis[-1] is index date
+        
+        thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
+                                                           condition_list_dd_vis[-2], 
+                                                           condition_list_dd_vis[-1], 
+                                                           response_url, 
+                                                           channel_id])
+        thr.start()
+        
+        client.chat_postMessage(channel="#slack_bot_prod",
+                                text="dd_vis_blocks_indexdate_act working"
+                                )    
+        
+    
+    else:
+        pass
+        
+        
+    
+    return ' ', 200
+
+################################################-------------------------------------------
 # @app.route('/dd_vis_trigger', methods=['POST'])
 # def dd_vis_trigger():
 #     data = request.form
@@ -834,10 +959,8 @@ def dd_vis_trigger():
         }
     ]
 
-    client.chat_postMessage(channel=channel_id,
-							text="Visualization:  ",
-							blocks = dd_vis_trigger_block)
-	
+    client.chat_postMessage(channel=channel_id, text="Visualization:  ", blocks = dd_vis_trigger_block)
+
     #returning empty string with 200 response
     return 'dd_vis trigger ran successfully', 200
 
