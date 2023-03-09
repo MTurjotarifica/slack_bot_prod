@@ -163,7 +163,6 @@ def add_ma(df, var, window):
         df: dataframe with a new column which is called var_ma_{windowint}
         i.e vl_value_ma7
     """
-	
     var_new = var + "_ma"  # new ma variable to be added to df
     df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
     df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: x.rolling(window).mean())  # compute moving average
@@ -837,8 +836,6 @@ def interactive_trigger():
     else:
 		pass
         
-        
-    
     return 'backgroundworker3 executed successfully', 200
 
 # @app.route('/dd_vis_trigger', methods=['POST'])
