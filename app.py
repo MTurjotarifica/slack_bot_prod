@@ -366,7 +366,6 @@ def backgroundworker_mp3(text, response_url):
         print(f"Got an error: {e.response['error']}")
 
     requests.post(response_url,data=json.dumps(payload))
-	return 'dd backgroundworker3 worked successfully', 200
 
 
 #mp3 trigger slash command which creates mp3 and posts to slack
@@ -760,7 +759,6 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
                             blocks=context_block)
 	
     requests.post(response_url,data=json.dumps(payload))
-	return 'success backgroundworker 3 ran', 200
 
 #creating an empty list for condition branching on wordcloud
 condition_list = []
