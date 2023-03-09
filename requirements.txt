@@ -24,3 +24,5 @@ slack
 aiohttp
 sqlalchemy
 pymysql
+
+Flask-SQLAlchemy
