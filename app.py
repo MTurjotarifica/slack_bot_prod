@@ -94,8 +94,6 @@ def load_dd_df():
 #storing df_digital_demand in variable df_raw to maintain code in viz generator
 df_raw = load_dd_df()
 
-
-
 ##################################################________________________________________
 
 #################################################
@@ -106,11 +104,10 @@ def add_indexing(df, var, index_date):
 	df_ref = df[df["date"] == index_date]  # create reference df with values from indexdate
 	df_ref = df_ref.rename(columns={var: var_ref})  # rename to avoid confusion
 	# Add values of indexdate to original dataframe and compute index values
-	df_w_index = pd.merge(
-		df,
-		df_ref[["keyword", "country", "gt_category", var_ref]],
-		how="left",
-        on=["keyword", "country", "gt_category"])
+	df_w_index = pd.merge(df,
+						  df_ref[["keyword", "country", "gt_category", var_ref]],
+						  how="left",
+						  on=["keyword", "country", "gt_category"])
 	df_w_index[var_new] = (df_w_index[var] / df_w_index[var_ref]) * 100
 	return df_w_index
 
@@ -137,16 +134,16 @@ def add_indexing_by_avg(df, var):
         i.e vl_value_index_avg
     """
 	var_ref = var + "_ref_avg"
-    	var_new = var + "_index_avg"
-    	df_index = df.copy()
-    	df_index[var_ref] = df_index.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: x.mean())  # compute moving average
-    	df_index[var_new] = (df_index[var] / df_index[var_ref]) * 100
-    	return df_index
+	var_new = var + "_index_avg"
+	df_index = df.copy()
+	df_index[var_ref] = df_index.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: x.mean())  # compute moving average
+	df_index[var_new] = (df_index[var] / df_index[var_ref]) * 100
+	return df_index
 
 
 # moving average function
 def add_ma(df, var, window):
-    """
+	"""
     Adding moving avg column to the dataframe
     (always grouped by keyword, country, category)
 
@@ -163,16 +160,15 @@ def add_ma(df, var, window):
         df: dataframe with a new column which is called var_ma_{windowint}
         i.e vl_value_ma7
     """
-    	var_new = var + "_ma"  # new ma variable to be added to df
-    	df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
-    	df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: x.rolling(window).mean())  # compute moving average
-	
-    	df = df.rename(columns={var_new: var_new + str(window)})
-    	return df
+	var_new = var + "_ma"  # new ma variable to be added to df
+	df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
+	df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: x.rolling(window).mean())  # compute moving average
+	df = df.rename(columns={var_new: var_new + str(window)})
+	return df
 
 # standard deviation function
 def add_std(df, var, window):
-    """
+	"""
     Adding standard_deviation of the moving average to the dataframe in a new column
     (always grouped by keyword, country, category)
 
@@ -189,16 +185,15 @@ def add_std(df, var, window):
         df: dataframe with a new column which is called var_std_{windowint}
         i.e vl_value_std7
     """
-    	var_new = var + "_std"  # new ma variable to be added to df
-    	df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
-    	df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: 2 * x.rolling(window).std())  # compute moving average
-    	df = df.rename(columns={var_new: var_new + str(window)})
-    	return df
+	var_new = var + "_std"  # new ma variable to be added to df
+	df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
+	df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: 2 * x.rolling(window).std())  # compute moving average
+	df = df.rename(columns={var_new: var_new + str(window)})
+	return df
 
 
 # smoother function
 def add_smoother(df, var, cutoff):
-	
     """
     Adding smooth values for var in the dataframe in a new column
     (always grouped by keyword, country, category)
@@ -218,11 +213,11 @@ def add_smoother(df, var, cutoff):
         df: dataframe with a new column which is called var_smooth
         i.e vl_value_smooth
     """
-    	b, a = scipy.signal.butter(3, cutoff)
-    	var_new = var + "_smooth"  # new ma variable to be added to df
-    	df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
-    	df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: scipy.signal.filtfilt(b, a, x))  # compute moving average
-    	return df
+	b, a = scipy.signal.butter(3, cutoff)
+	var_new = var + "_smooth"  # new ma variable to be added to df
+	df = df.sort_values(by=["keyword", "gt_category", "country", "date"])
+	df[var_new] = df.groupby(["keyword", "country", "gt_category"])[var].transform(lambda x: scipy.signal.filtfilt(b, a, x))  # compute moving average
+	return df
 
 #######################################_________________________
 
