@@ -131,89 +131,89 @@ def interactive_trigger():
         kw_value=payload['actions'][0]['value']
         condition_list_dd_vis.append(kw_value)
 
-        client.chat_postMessage(channel=channel_id, text="dd vis trigger and interactive trigger working")
+        #client.chat_postMessage(channel=channel_id, text="dd vis trigger and interactive trigger working")
         
         #datetime picker block for startdate that is triggered after text input block
-    #     dd_vis_blocks_startdate = [
+
+        dd_vis_blocks_startdate = [
     
-	# 	{
- 	# 		"type": "input",
- 	# 		"element": {
-	# 			"type": "datepicker",
-	# 			"initial_date": "2022-01-01",
-	# 			"placeholder": {
- 	# 				"type": "plain_text",
- 	# 				"text": "Select a date",
- 	# 				"emoji": True
-	# 			},
-	# 			"action_id": "dd_vis_blocks_startdate_act"
- 	# 		},
- 	# 		"label": {
-	# 			"type": "plain_text",
-	# 			"text": "Please select the startdate for the Visualization",
-	# 			"emoji": True
- 	# 		}
-	# 	}]
+		{
+ 			"type": "input",
+ 			"element": {
+				"type": "datepicker",
+				"initial_date": "2022-01-01",
+				"placeholder": {
+ 					"type": "plain_text",
+ 					"text": "Select a date",
+ 					"emoji": True
+				},
+				"action_id": "dd_vis_blocks_startdate_act"
+ 			},
+ 			"label": {
+				"type": "plain_text",
+				"text": "Please select the startdate for the Visualization",
+				"emoji": True
+ 			}
+		}]
         
-    #     #sending kw_value and language selection dropdown
-    #     client.chat_postMessage(channel="#slack_bot_prod", 
-    #                             text= f"{channel_id} language selection dropdown",
-    #                             blocks=dd_vis_blocks_startdate )
+        #sending kw_value and language selection dropdown
+        client.chat_postMessage(channel=channel_id,
+                                text= f"{channel_id} language selection dropdown",
+                                blocks=dd_vis_blocks_startdate )
         
-    # elif action_id == "dd_vis_blocks_startdate_act":
-    #     payload = json.loads(data2['payload'])
-    #     #obtaining kw_value and appending value to list
-    #     kw_value=payload['actions'][0]['selected_date']
+    elif action_id == "dd_vis_blocks_startdate_act":
+        payload = json.loads(data2['payload'])
+        #obtaining kw_value and appending value to list
+        kw_value=payload['actions'][0]['selected_date']
         
-    #     condition_list_dd_vis.append(kw_value)
+        condition_list_dd_vis.append(kw_value)
         
-    #     #datetime picker block for startdate that is triggered after text input block
-    #     dd_vis_blocks_indexdate = [
-  	# 	{
-   	# 		"type": "input",
-   	# 		"element": {
-  	# 			"type": "datepicker",
-  	# 			"initial_date": "2022-06-01",
-  	# 			"placeholder": {
-   	# 				"type": "plain_text",
-   	# 				"text": "Please select the index date for the Visualization",
-   	# 				"emoji": True
-  	# 			},
-  	# 			"action_id": "dd_vis_blocks_indexdate_act"
-   	# 		},
-   	# 		"label": {
-  	# 			"type": "plain_text",
-  	# 			"text": "Please select the index date for the Visualization",
-  	# 			"emoji": True
-   	# 		}
-  	# 	}
-   	# ]
-    #     #sending kw_value and language selection dropdown
-    #     client.chat_postMessage(channel="#slack_bot_prod",
-    #                             text=f"{kw_value}     {response_url}",
-    #                             blocks=dd_vis_blocks_indexdate
-    #                             )
+        #datetime picker block for startdate that is triggered after text input block
+        dd_vis_blocks_indexdate = [
+  		{
+   			"type": "input",
+   			"element": {
+  				"type": "datepicker",
+  				"initial_date": "2022-06-01",
+  				"placeholder": {
+   					"type": "plain_text",
+   					"text": "Please select the index date for the Visualization",
+   					"emoji": True
+  				},
+  				"action_id": "dd_vis_blocks_indexdate_act"
+   			},
+   			"label": {
+  				"type": "plain_text",
+  				"text": "Please select the index date for the Visualization",
+  				"emoji": True
+   			}
+  		}
+   	]
+        #sending kw_value and language selection dropdown
+        client.chat_postMessage(channel=channel_id,
+                                text=f"{kw_value}     {response_url}",
+                                blocks=dd_vis_blocks_indexdate
+                                )
     
-    # elif action_id == "dd_vis_blocks_indexdate_act":
-    #     payload = json.loads(data2['payload'])
-    #     #obtaining kw_value and appending value to list
-    #     kw_value=payload['actions'][0]['selected_date']
-    #     condition_list_dd_vis.append(kw_value)
+    elif action_id == "dd_vis_blocks_indexdate_act":
+        payload = json.loads(data2['payload'])
+        #obtaining kw_value and appending value to list
+        kw_value=payload['actions'][0]['selected_date']
+        condition_list_dd_vis.append(kw_value)
         
-    #     # condition_list_dd_vis[-3] is keyword
-    #     # condition_list_dd_vis[-2] is start date
-    #     # condition_list_dd_vis[-1] is index date
+        # condition_list_dd_vis[-3] is keyword
+        # condition_list_dd_vis[-2] is start date
+        # condition_list_dd_vis[-1] is index date
         
-    #     thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
-    #                                                        condition_list_dd_vis[-2], 
-    #                                                        condition_list_dd_vis[-1], 
-    #                                                        response_url, 
-    #                                                        channel_id])
-    #     thr.start()
+        # thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
+        #                                                    condition_list_dd_vis[-2], 
+        #                                                    condition_list_dd_vis[-1], 
+        #                                                    response_url, 
+        #                                                    channel_id])
+        # thr.start()
         
-    #     client.chat_postMessage(channel="#slack_bot_prod",
-    #                             text="dd_vis_blocks_indexdate_act working"
-    #                             )
+
+        client.chat_postMessage(channel=channel_id, text=f"dd_vis_blocks_indexdate_act working kw: {condition_list_dd_vis[-3]} & startd: {condition_list_dd_vis[-2]} & indexd: {condition_list_dd_vis[-1]} & responseurl: {response_url} & chID:{channel_id}")
         
     else:
         client.chat_postMessage(channel="#slack_bot_prod", text="not dd vis trigger")
