@@ -740,7 +740,7 @@ def handle_hello_request():
     channel_id = data.get('channel_id')
     # Execute the /hello command function
     slack_app.client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="it works!", )
-    client.chat_postMessage(response_type= "in_channel", channel='#slack_bot_prod', text=" 2nd it works!2!", )
+    client.chat_postMessage(response_type= "in_channel", channel='#slack_bot_prod', text=" 2nd it works!33!", )
     return "Hello world1" , 200
 
 
