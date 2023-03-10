@@ -666,14 +666,9 @@ def interactive_trigger():
         # condition_list_dd_vis[-2] is start date
         # condition_list_dd_vis[-1] is index date
         
-        # thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
-        #                                                    condition_list_dd_vis[-2], 
-        #                                                    condition_list_dd_vis[-1], 
-        #                                                    response_url, 
-        #                                                    channel_id])
-        # thr.start()
+
         
-	thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
+        thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
                                                            condition_list_dd_vis[-2], 
                                                            condition_list_dd_vis[-1], 
                                                            response_url, 
