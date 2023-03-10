@@ -83,7 +83,7 @@ def load_dd_df():
 			   )
     
     #this is the query to be performed #edit st 2023-03-07
-    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE') AND (date > '2023-01-01');"
+    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE') AND (date > '2020-01-01');"
     
     df_dd_raw = pd.read_sql(sqlalctext(stmt), connection) #edit st 2023-03-07
     df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
@@ -141,7 +141,7 @@ def handle_slash_command():
 
     # Execute the appropriate function based on the command
     if command == "/example":
-        client.chat_postMessage(channel='#slack_bot_prod', text=f"it worksssss! {df_raw.date.max()}")
+        client.chat_postMessage(channel='#slack_bot_prod', text=f"it worksssss! max date: {df_raw.date.max()} & min date: {df_raw.date.min()}")
         response_text = handle_example_command(text)
     else:
         response_text = "Unknown command: {}".format(command)
