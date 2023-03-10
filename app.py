@@ -3,7 +3,7 @@ import os
 from slack_bolt import App
 from slack_bolt.adapter.flask import SlackRequestHandler
 from flask import Flask, request, make_response
-from flask_sqlalchemy import SQLAlchemy
+#from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from slack_sdk import WebClient
 from threading import Thread
@@ -83,7 +83,7 @@ def load_dd_df():
 			   )
     
     #this is the query to be performed #edit st 2023-03-07
-    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE');"
+    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE') AND (date > '2023-01-01');"
     
     df_dd_raw = pd.read_sql(sqlalctext(stmt), connection) #edit st 2023-03-07
     df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
