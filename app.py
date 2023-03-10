@@ -111,7 +111,116 @@ condition_list = []
 condition_list_dd_vis = []
 
 #######################################----------------------------------------------
+@app.route('/slack/interactive-endpoint', methods=['GET','POST'])
+def interactive_trigger():
 
+    data = request.form
+    data2 = request.form.to_dict()
+    user_id = data.get('user_id')
+    channel_id = json.loads(data2['payload'])['container']['channel_id']
+    text = data.get('text')
+
+    response_url = json.loads(data2['payload'])['response_url']
+    actions = data.get("actions")
+    actions_value = data.get("actions.value")
+    action_id = json.loads(data2['payload'])['actions'][0]['action_id']
+
+    if action_id == "dd_vis_trigger_act":
+        payload = json.loads(data2['payload'])
+        #obtaining kw_value and appending value to list
+        kw_value=payload['actions'][0]['value']
+        condition_list_dd_vis.append(kw_value)
+
+        client.chat_postMessage(channel=channel_id, text="dd vis trigger and interactive trigger working")
+        
+        #datetime picker block for startdate that is triggered after text input block
+    #     dd_vis_blocks_startdate = [
+    
+	# 	{
+ 	# 		"type": "input",
+ 	# 		"element": {
+	# 			"type": "datepicker",
+	# 			"initial_date": "2022-01-01",
+	# 			"placeholder": {
+ 	# 				"type": "plain_text",
+ 	# 				"text": "Select a date",
+ 	# 				"emoji": True
+	# 			},
+	# 			"action_id": "dd_vis_blocks_startdate_act"
+ 	# 		},
+ 	# 		"label": {
+	# 			"type": "plain_text",
+	# 			"text": "Please select the startdate for the Visualization",
+	# 			"emoji": True
+ 	# 		}
+	# 	}]
+        
+    #     #sending kw_value and language selection dropdown
+    #     client.chat_postMessage(channel="#slack_bot_prod", 
+    #                             text= f"{channel_id} language selection dropdown",
+    #                             blocks=dd_vis_blocks_startdate )
+        
+    # elif action_id == "dd_vis_blocks_startdate_act":
+    #     payload = json.loads(data2['payload'])
+    #     #obtaining kw_value and appending value to list
+    #     kw_value=payload['actions'][0]['selected_date']
+        
+    #     condition_list_dd_vis.append(kw_value)
+        
+    #     #datetime picker block for startdate that is triggered after text input block
+    #     dd_vis_blocks_indexdate = [
+  	# 	{
+   	# 		"type": "input",
+   	# 		"element": {
+  	# 			"type": "datepicker",
+  	# 			"initial_date": "2022-06-01",
+  	# 			"placeholder": {
+   	# 				"type": "plain_text",
+   	# 				"text": "Please select the index date for the Visualization",
+   	# 				"emoji": True
+  	# 			},
+  	# 			"action_id": "dd_vis_blocks_indexdate_act"
+   	# 		},
+   	# 		"label": {
+  	# 			"type": "plain_text",
+  	# 			"text": "Please select the index date for the Visualization",
+  	# 			"emoji": True
+   	# 		}
+  	# 	}
+   	# ]
+    #     #sending kw_value and language selection dropdown
+    #     client.chat_postMessage(channel="#slack_bot_prod",
+    #                             text=f"{kw_value}     {response_url}",
+    #                             blocks=dd_vis_blocks_indexdate
+    #                             )
+    
+    # elif action_id == "dd_vis_blocks_indexdate_act":
+    #     payload = json.loads(data2['payload'])
+    #     #obtaining kw_value and appending value to list
+    #     kw_value=payload['actions'][0]['selected_date']
+    #     condition_list_dd_vis.append(kw_value)
+        
+    #     # condition_list_dd_vis[-3] is keyword
+    #     # condition_list_dd_vis[-2] is start date
+    #     # condition_list_dd_vis[-1] is index date
+        
+    #     thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
+    #                                                        condition_list_dd_vis[-2], 
+    #                                                        condition_list_dd_vis[-1], 
+    #                                                        response_url, 
+    #                                                        channel_id])
+    #     thr.start()
+        
+    #     client.chat_postMessage(channel="#slack_bot_prod",
+    #                             text="dd_vis_blocks_indexdate_act working"
+    #                             )
+        
+    else:
+        client.chat_postMessage(channel="#slack_bot_prod", text="not dd vis trigger")
+        #pass
+        
+    
+    return 'interactive trigger works', 200
 
 
 ################################################
@@ -165,6 +274,54 @@ def handle_hello_request():
     return "Hello world1" , 200
 
 
+# dd vis trigger slash command
+@app.route('/dd_vis_trigger', methods=['POST'])
+def dd_vis_trigger():
+    data = request.form
+    #we are usging data2 to parse the information
+    data2 = request.form.to_dict()
+    #print(data)
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+    text = data.get('text')
+    response_url = data.get("response_url")
+    #event = payload.get('event', {})
+    #text = event.get('text')
+    greeting_message = "Processing your request. Please wait."
+    ending_message = "Process executed successfully"
+
+    #utilizing threading
+    #thr = Thread(target=backgroundworker, args=[text,response_url])
+    #thr.start()
+
+    #this creates the text prompt in slack block kit
+    dd_vis_trigger_block = [
+        {
+           "type": "divider"
+           },
+        {
+            "dispatch_action": True,
+            "type": "input",
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "dd_vis_trigger_act"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Please type the keyword for the visualization ",
+                "emoji": True
+            }
+        }
+    ]
+
+    client.chat_postMessage(channel=channel_id, 
+                                        text="Visualization:  ",
+                                        blocks = dd_vis_trigger_block
+                                        )
+
+
+    #returning empty string with 200 response
+    return 'dd_vis trigger works', 200
 
 # Start the Slack app using the Flask app as a middleware
 handler = SlackRequestHandler(slack_app)
