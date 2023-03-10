@@ -82,7 +82,7 @@ def load_dd_df():
     #                        metadata)
     
     #this is the query to be performed #edit st 2023-03-07
-    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE') and (date >= '2023-01-01');"
+    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE') and (date >= '2023-01-01');" #date fixed to 2023 jan 1
     
     df_dd_raw = pd.read_sql(sqlalctext(stmt), connection) #edit st 2023-03-07
     df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
