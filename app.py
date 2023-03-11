@@ -35,6 +35,7 @@ import plotly.express as px
 import matplotlib.dates as mdates
 import slack
 import scipy.signal
+import kaleido # required for fig.write in azure
 
 from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy import text as sqlalctext #edit st 2023-03-07
