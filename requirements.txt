@@ -7,6 +7,7 @@ datetime
 seaborn
 plotly
 matplotlib
+kaleido
 azure.cognitiveservices.speech
 
 azure.functions
@@ -16,8 +17,6 @@ slackeventsapi
 
 deepl
 
-numpy
-pandas
 mysql.connector
 scipy
 slack
