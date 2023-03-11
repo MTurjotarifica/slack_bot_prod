@@ -471,18 +471,9 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
             width = 1920,
             height = 1080     
         )
-        container_string=os.environ["CONNECTION_STRING"]
-        storage_account_name = "storage4slack"
-        container_name = "visfunc"
-        blob_service_client = BlobServiceClient.from_connection_string (container_string) 
-        container_client = blob_service_client.get_container_client(container_name)
-        blob_name = f"{text}.png"
-        filename = f"{text}.png"
-            
-        with open(filename, "rb") as data:
-            blob_client.upload_blob(data)
-                
-#             fig.write_image(os.path.expanduser(f"{text}.png"))
+
+        # write image 
+        fig.write_image(f"{text}.png")
             
         return 'vis completed'
     
@@ -497,72 +488,89 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
         font_use = 'Roboto Mono Light for Powerline',
         out_type = 'png'
     )
-    
+
     #payload is required to to send second message after task is completed
     payload = {"text":"your task is complete",
                 "username": "bot"}
-    
+
+    # uploading the file to azure blob storage
+    # creating variable to use in blob_service_client
     container_string=os.environ["CONNECTION_STRING"]
     storage_account_name = "storage4slack"
-    container_name = "visfunc"
+    # creating variable to use in container_client
+    container_name = "mp3"
     blob_service_client = BlobServiceClient.from_connection_string (container_string) 
     container_client = blob_service_client.get_container_client(container_name)
-    blob_name = f"{text}.png"
     filename = f"{text}.png"
-
+    blob_client = container_client.get_blob_client(filename)
+    blob_name= filename
+    # upload the file
+    with open(filename, "rb") as data:
+        blob_client.upload_blob(data)
+    
     #uploading the file to slack using bolt syntax for py
     try:
         # Download the blob as binary data
         blob_client = blob_service_client.get_blob_client(container_name, blob_name)
         blob_data = blob_client.download_blob().readall()
         
-        # Open the image file and read its contents
+        # Open the audio file and read its contents
         with open(filename, 'rb') as file:
             file_data = file.read()
         
-#         filename=f"{text}.png"
-        response = client.files_upload(channels=channel_id,
+        # filename=f"{text}.png"
+        response = client.files_upload(channels='#slack_bot_prod',
                                         file=file_data,
-                                        initial_comment="Visualization: ")
+                                        initial_comment="Audio: ")
         assert response["file"]  # the uploaded file
+        
+        # Delete the blob
+
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+        blob_client.delete_blob()
+        
     except SlackApiError as e:
         # You will get a SlackApiError if "ok" is False
         assert e.response["ok"] is False
         assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
         print(f"Got an error: {e.response['error']}")
-        
-    context_block = [
-		{
-			"type": "divider"
-		},
-		{
-			"type": "context",
-			"elements": [
-				{
-					"type": "plain_text",
-					"text": "Insight Generation: :beta:",
-					"emoji": True
-				}
-			]
-		},
-		{
-			"type": "context",
-			"elements": [
-				{
-					"type": "mrkdwn",
-					"text": "*Usage Hint:* \nPlease use the slash command again to generate a new visualization."
-				}
-			]
-		}
-	]
-    
-    #sending kw_value and language selection dropdown
-    client.chat_postMessage(channel=channel_id,
-                            text="sending kw_value",
-                            blocks=context_block
-                            )
-    
+
     requests.post(response_url,data=json.dumps(payload))
+
+    ###############################################################################
+
+    # context_block = [
+	# 	{
+	# 		"type": "divider"
+	# 	},
+	# 	{
+	# 		"type": "context",
+	# 		"elements": [
+	# 			{
+	# 				"type": "plain_text",
+	# 				"text": "Insight Generation: :beta:",
+	# 				"emoji": True
+	# 			}
+	# 		]
+	# 	},
+	# 	{
+	# 		"type": "context",
+	# 		"elements": [
+	# 			{
+	# 				"type": "mrkdwn",
+	# 				"text": "*Usage Hint:* \nPlease use the slash command again to generate a new visualization."
+	# 			}
+	# 		]
+	# 	}
+	# ]
+    
+    # #sending kw_value and language selection dropdown
+    # client.chat_postMessage(channel=channel_id,
+    #                         text="sending kw_value",
+    #                         blocks=context_block
+    #                         )
+    
+    # requests.post(response_url,data=json.dumps(payload))
 
 ########################################################
 #creating an empty list for condition branching on wordcloud
