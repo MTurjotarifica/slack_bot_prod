@@ -25,6 +25,8 @@ from datetime import date
 from datetime import datetime as dt
 from datetime import timedelta as delta
 from datetime import timedelta
+
+# visualization packages
 import seaborn as sns
 import plotly.graph_objects as go
 import plotly
@@ -33,9 +35,10 @@ import plotly.offline as pyo
 from plotly.subplots import make_subplots
 import plotly.express as px
 import matplotlib.dates as mdates
-import slack
-import scipy.signal
 import kaleido # required for fig.write in azure
+import scipy.signal
+
+import slack
 
 from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy import text as sqlalctext #edit st 2023-03-07
@@ -83,7 +86,7 @@ def load_dd_df():
     #                        metadata)
     
     #this is the query to be performed #edit st 2023-03-07
-    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE') and (date >= '2022-01-01');" #date fixed to 2023 jan 1
+    stmt = "SELECT * FROM digital_demand WHERE (gt_category = 13) AND (country = 'DE') and (date >= '2010-01-01');" #date updated to 2010 jan 1
     
     df_dd_raw = pd.read_sql(sqlalctext(stmt), connection) #edit st 2023-03-07
     df_dd_raw['date'] = pd.to_datetime(df_dd_raw['date'])
@@ -499,7 +502,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
     container_string=os.environ["CONNECTION_STRING"]
     storage_account_name = "storage4slack"
     # creating variable to use in container_client
-    container_name = "mp3"
+    container_name = "visfunc"
     blob_service_client = BlobServiceClient.from_connection_string (container_string) 
     container_client = blob_service_client.get_container_client(container_name)
     filename = f"{text}.png"
@@ -520,9 +523,9 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
             file_data = file.read()
         
         # filename=f"{text}.png"
-        response = client.files_upload(channels='#slack_bot_prod',
+        response = client.files_upload(channels=channel_id,
                                         file=file_data,
-                                        initial_comment="Audio: ")
+                                        initial_comment="Visualization: ")
         assert response["file"]  # the uploaded file
         
         # Delete the blob
@@ -684,13 +687,13 @@ def interactive_trigger():
                                                            channel_id])
         thr.start()
         
-        client.chat_postMessage(channel=channel_id, text="dd_vis_blocks_indexdate_act working")
+        client.chat_postMessage(channel=channel_id, text="A backgroundworker is running your task. Please wait.")
 	
 
         #client.chat_postMessage(channel=channel_id, text=f"dd_vis_blocks_indexdate_act working kw: {condition_list_dd_vis[-3]} & startd: {condition_list_dd_vis[-2]} & indexd: {condition_list_dd_vis[-1]} & responseurl: {response_url} & chID:{channel_id}")
         
     else:
-        client.chat_postMessage(channel=channel_id, text="not dd vis trigger")
+        client.chat_postMessage(channel=channel_id, text="Error: Please try again with different values.")
         #pass
         
     
@@ -704,7 +707,7 @@ def interactive_trigger():
 
 ################################################-------------------------------------------
 #######################################
-def backgroundworker_mp3(text, response_url):
+def backgroundworker_mp3(text, response_url, channel_id):
     
     # your task
     # The environment variables named "SPEECH_KEY" and "SPEECH_REGION"
@@ -764,9 +767,10 @@ def backgroundworker_mp3(text, response_url):
         # Open the audio file and read its contents
         with open(filename, 'rb') as file:
             file_data = file.read()
+            
         
 #         filename=f"{(text[:3]+text[-3:])}.mp3"
-        response = client.files_upload(channels='#slack_bot_prod',
+        response = client.files_upload(channels=channel_id,
                                         file=file_data,
                                         initial_comment="Audio: ")
         assert response["file"]  # the uploaded file
@@ -802,13 +806,13 @@ def mp3_trigger():
     ending_message = "Process executed successfully"
 
 
-    client.chat_postMessage(channel='#slack_bot_prod',
+    client.chat_postMessage(channel=channel_id,
                             text="MP3 loading. Please wait."
                             )
 
 
     #triggering backgroundworker1 
-    thr = Thread(target=backgroundworker_mp3, args=[text, response_url])
+    thr = Thread(target=backgroundworker_mp3, args=[text, response_url, channel_id])
     thr.start()
 
 
@@ -852,7 +856,7 @@ def handle_hello_request():
     channel_id = data.get('channel_id')
     # Execute the /hello command function
     slack_app.client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="it works!", )
-    client.chat_postMessage(response_type= "in_channel", channel='#slack_bot_prod', text=" 2nd it works!33!", )
+    client.chat_postMessage(response_type= "in_channel", channel=channel_id, text=" 2nd it works!33!", )
     return "Hello world1" , 200
 
 #######################################################__________________________________
