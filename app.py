@@ -101,24 +101,27 @@ df_raw_22_onwards = load_dd_df()
 
 # loading data from a blob container called csv that contains digital demand data from 2010 to 2022
 container_string=os.environ["CONNECTION_STRING"]
-# storage_account_name = "storage4slack"
+storage_account_name = "storage4slack"
 container_name = "csv"
 blob_service_client = BlobServiceClient.from_connection_string (container_string)
 container_client = blob_service_client.get_container_client(container_name)
-blob_name = "split_df_raw.csv"
+filename = "split_df_raw.csv"
+blob_client = container_client.get_blob_client(filename)
+blob_name= filename
+
 
 blob_client = blob_service_client.get_blob_client(container_name, blob_name)
 blob_data = blob_client.download_blob().readall()
 
-# Open the audio file and read its contents
-with open(blob_name, 'rb') as file:
+# Open the csv file and read its contents
+with open(filename, 'rb') as file:
     file_data = file.read()
 
 # file_data is our new csv
-df_raw_10_22 = pd.read_csv(file_data)
+df_raw_10_21 = pd.read_csv(file_data)
 
 # creating a list of dataframes to be merged
-frames = [df_raw_10_22, df_raw_22_onwards]
+frames = [df_raw_10_21, df_raw_22_onwards]
 
 # merging the dataframes
 df_raw = pd.concat(frames)
