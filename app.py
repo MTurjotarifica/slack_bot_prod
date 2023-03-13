@@ -114,11 +114,16 @@ blob_client = blob_service_client.get_blob_client(container_name, blob_name)
 blob_data = blob_client.download_blob().readall()
 
 # Open the csv file and read its contents
-with open(filename, 'rb') as file:
-    file_data = file.read()
+# with open(filename, 'rb') as file:
+#     file_data = file.read()
+
+# Download the CSV file to a local temporary file
+with open(filename, "wb") as my_blob:
+    download_stream = blob_client.download_blob()
+    my_blob.write(download_stream.readall())
 
 # file_data is our new csv
-df_raw_10_21 = pd.read_csv(file_data)
+df_raw_10_21 = pd.read_csv(filename)
 
 # creating a list of dataframes to be merged
 frames = [df_raw_10_21, df_raw_22_onwards]
