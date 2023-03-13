@@ -60,7 +60,7 @@ slack_app = App(
 client = slack_app.client
 
 
-##################################################________________________________________
+#######################################################__________________________________
 #function to create load difital demand as dataframe
 def load_dd_df():
     '''
@@ -133,9 +133,10 @@ df_raw = pd.concat(frames)
 
 # converting date to datetime object
 df_raw['date'] = pd.to_datetime(df_raw['date'])
+#######################################################__________________________________
 
-#################################################
-#### VIS FUNCTIONS ###########
+#######################################################__________________________________
+############################# VIS FUNCTIONS #############################################
 def add_indexing(df,var,index_date):
     '''
     Adding indexes to the var in a dataframe 
@@ -315,12 +316,11 @@ def add_smoother(df,var,cutoff):
                              ])[var].transform(lambda x: scipy.signal.filtfilt(b, a, x))    #compute moving average
     return df
 
-##### END OF VIS FUNCTIONS *************************
-#######################################_________________________
+############################# END OF VIS FUNCTIONS ######################################
+#######################################################__________________________________
 
-
-
-#######################################_______________________________________________
+#######################################################__________________________________
+############################# BACKGROUNDWORKER3 #########################################
 # backgroundworker for new combined flow
 def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_id):
 
@@ -576,8 +576,10 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
         print(f"Got an error: {e.response['error']}")
 
     requests.post(response_url,data=json.dumps(payload))
+########################### END OF BACKGROUNDWORKER3 ####################################
+#######################################################__________________________________
 
-    ###############################################################################
+#######################################################__________________________________
 
     # context_block = [
 	# 	{
@@ -611,15 +613,17 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
     #                         )
     
     # requests.post(response_url,data=json.dumps(payload))
+#######################################################__________________________________
 
-########################################################
+#######################################################__________________________________
 #creating an empty list for condition branching on wordcloud
 condition_list = []
 
 #creating an empty list for condition branching on dd_vis_trigger
 condition_list_dd_vis = []
+#######################################################__________________________________
 
-#######################################----------------------------------------------
+#######################################################__________________________________
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
 def interactive_trigger():
 
@@ -734,15 +738,16 @@ def interactive_trigger():
         
     
     return 'interactive trigger works', 200
+#######################################################__________________________________
 
 
 ################################################
-# st edit mar 08, 2023 fixed indentation using vs code
+# edit mar 08, 2023 fixed indentation using vs code
 # indendation errors are being caused by spyder (the ide I use)
 
 
-################################################-------------------------------------------
-#######################################
+#######################################################__________________________________
+# backgroundworker for mp3 post on slack
 def backgroundworker_mp3(text, response_url, channel_id):
     
     # your task
@@ -822,10 +827,11 @@ def backgroundworker_mp3(text, response_url, channel_id):
         print(f"Got an error: {e.response['error']}")
 
     requests.post(response_url,data=json.dumps(payload))
+#######################################################__________________________________
 
 
 #######################################################__________________________________
-#mp3 trigger slash command which creates mp3 and posts to slack
+# mp3 trigger slash command which creates mp3 and posts to slack
 @app.route('/mp3_trigger', methods=['POST'])
 def mp3_trigger():
     data = request.form
@@ -847,20 +853,107 @@ def mp3_trigger():
                             )
 
 
-    #triggering backgroundworker1 
+    # triggering backgroundworker1 
     thr = Thread(target=backgroundworker_mp3, args=[text, response_url, channel_id])
     thr.start()
 
+
+    # returning empty string with 200 response
+    return f'{greeting_message}', 200
+#######################################################__________________________________
+
+#######################################################__________________________________
+# background worker for deep l 
+def backgroundworker_deepl_text_lang(text_lang_to, text_to_translate, response_url, channel_id):
+
+    # your task
+
+    # DeepL auth key is stored in environment variable which we are obtaining
+    translator = deepl.Translator(os.environ.get('DEEPL_AUTH_KEY'))
+
+    #using text argument to translate text to Specified language
+    result = translator.translate_text(f'{text_to_translate}', 
+                                       target_lang=f'{text_lang_to}') 
+
+    #storing translated in a variable
+    translated_text = result.text
+
+
+
+    #payload is required to to send second message after task is completed
+    payload = {"text":"your task is complete",
+                "username": "bot"}
+
+    #posting translated text to slack channel
+    client.chat_postMessage(channel=channel_id,
+                            text=f"{translated_text}"
+                            )
+
+
+    requests.post(response_url,data=json.dumps(payload))
+#######################################################__________________________________
+    
+#######################################################__________________________________
+#deepl trigger slash command which creates translation for speech blocks 
+#and posts to slack
+@app.route('/deepl_trigger_with_lang', methods=['POST'])
+def deepl_trigger_with_lang():
+    data = request.form
+    channel_id = data.get('channel_id')
+    #we are usging data2 to parse the information
+    data2 = request.form.to_dict()
+    #print(data)
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+    #getting language to translate to
+    text_lang_to = data.get('text').split()[0]
+    #text to translate (we are taking portions after en-gb/en-us etc)
+    if (text_lang_to.lower() == 'en-gb'):
+        text_to_translate = data.get('text')[6:]
+    elif (text_lang_to.lower() == 'en-us'):
+        text_to_translate = data.get('text')[6:]
+    elif (text_lang_to.lower() == 'pt-pt'):
+        text_to_translate = data.get('text')[6:]
+    elif (text_lang_to.lower() == 'pt-br'):
+        text_to_translate = data.get('text')[6:]
+    else:
+        text_to_translate = data.get('text')[3:]
+
+    response_url = data.get("response_url")
+    #event = payload.get('event', {})
+    #text = event.get('text')
+    greeting_message = "Processing your request. Please wait."
+    ending_message = "Process executed successfully"
+
+
+    client.chat_postMessage(channel=channel_id,
+                            text="DeepL Translation loading. Please wait."
+                            )
+
+
+    #triggering backgroundworker for deepl with arguments lang to translate from
+    #translate to and text to translate
+    thr = Thread(target=backgroundworker_deepl_text_lang, 
+                 args=[text_lang_to,
+                       text_to_translate,
+                       response_url,
+                       channel_id
+                      ]
+                 )
+
+    thr.start()
 
     #returning empty string with 200 response
     return f'{greeting_message}', 200
 #######################################################__________________________________
 
+#######################################################__________________________________
 # Define the function that handles the /example command
 def handle_example_command(text):
     return "You entered: {}".format(text)
+#######################################################__________________________________
 
-
+#######################################################__________________________________
 # Define the function that handles the /hello command
 # Handle incoming slash command requests
 @app.route("/slack/command", methods=["POST"])
@@ -883,6 +976,7 @@ def handle_slash_command():
 
     # Return an empty response to Slack
     return make_response("", 200)
+#######################################################__________________________________
 
 #######################################################__________________________________
 # Add a route for the /hello command
@@ -894,6 +988,7 @@ def handle_hello_request():
     slack_app.client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="it works!", )
     client.chat_postMessage(response_type= "in_channel", channel=channel_id, text=" 2nd it works!33!", )
     return "Hello world1" , 200
+#######################################################__________________________________
 
 #######################################################__________________________________
 # dd vis trigger slash command
@@ -944,6 +1039,7 @@ def dd_vis_trigger():
 
     #returning empty string with 200 response
     return 'dd_vis trigger works', 200
+#######################################################__________________________________
 
 #######################################################__________________________________
 # Start the Slack app using the Flask app as a middleware
