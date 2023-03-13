@@ -96,7 +96,33 @@ def load_dd_df():
     return df_dd_raw
 
 #storing df_digital_demand in variable df_raw to maintain code in viz generator
-df_raw = load_dd_df()
+df_raw_22_onwards = load_dd_df()
+
+
+# loading data from a blob container called csv that contains digital demand data from 2010 to 2022
+container_string=os.environ["CONNECTION_STRING"]
+# storage_account_name = "storage4slack"
+container_name = "csv"
+blob_service_client = BlobServiceClient.from_connection_string (container_string)
+container_client = blob_service_client.get_container_client(container_name)
+blob_name = "split_df_raw.csv"
+
+blob_client = blob_service_client.get_blob_client(container_name, blob_name)
+blob_data = blob_client.download_blob().readall()
+
+# Open the audio file and read its contents
+with open(blob_name, 'rb') as file:
+    file_data = file.read()
+
+# file_data is our new csv
+df_raw_10_22 = pd.read_csv(file_data)
+
+# creating a list of dataframes to be merged
+frames = [df_raw_10_22, df_raw_22_onwards]
+
+# merging the dataframes
+df_raw = pd.concat(frames)
+
 
 #################################################
 #### VIS FUNCTIONS ###########
@@ -836,7 +862,7 @@ def handle_slash_command():
 
     # Execute the appropriate function based on the command
     if command == "/example":
-        client.chat_postMessage(channel='#slack_bot_prod', text=f"it worksssss! max date: {df_raw.date.max()} & min date: {df_raw.date.min()}")
+        client.chat_postMessage(channel='#slack_bot_prod', text=f"it worksssss! max date: {df_raw.date.max()} & min date: {df_raw.date.min()} & blob df min date: {df_raw_10_22.date.min()}")
         response_text = handle_example_command(text)
     else:
         response_text = "Unknown command: {}".format(command)
