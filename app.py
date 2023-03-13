@@ -131,6 +131,8 @@ frames = [df_raw_10_21, df_raw_22_onwards]
 # merging the dataframes
 df_raw = pd.concat(frames)
 
+# converting date to datetime object
+df_raw['date'] = pd.to_datetime(df_raw['date'])
 
 #################################################
 #### VIS FUNCTIONS ###########
@@ -870,7 +872,7 @@ def handle_slash_command():
 
     # Execute the appropriate function based on the command
     if command == "/example":
-        client.chat_postMessage(channel='#slack_bot_prod', text=f"it worksssss! max date: {df_raw.date.max()} & min date: {df_raw.date.min()} & blob df min date: {df_raw_10_22.date.min()}")
+        client.chat_postMessage(channel='#slack_bot_prod', text=f"it worksssss! max date: {df_raw.date.max()} & min date: {df_raw.date.min()} & blob df min date: {df_raw_10_21.date.min()}")
         response_text = handle_example_command(text)
     else:
         response_text = "Unknown command: {}".format(command)
