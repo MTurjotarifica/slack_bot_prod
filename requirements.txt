@@ -29,3 +29,5 @@ Flask-SQLAlchemy
 stop-words
 wikipedia
 pillow
+
+nltk
