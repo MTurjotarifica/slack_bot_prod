@@ -31,3 +31,7 @@ wikipedia
 pillow
 
 nltk
+click
+joblib
+regex
+tqdm
