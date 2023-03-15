@@ -1135,14 +1135,19 @@ def backgroundworker_wiki_csv_trigger(wordcloud_lang_to, wordcloud_lang_kw, resp
         blob_client = blob_service_client.get_blob_client(container_name, blob_name)
         blob_data = blob_client.download_blob().readall()
         
+	# Download the CSV file to a local temporary file
+        with open(filename, "wb") as my_blob:
+            download_stream = blob_client.download_blob()
+            my_blob.write(download_stream.readall())
+	
         # Open the audio file and read its contents
-        with open(filename, 'rb') as file:
-            file_data = file.read()
+      #   with open(filename, 'rb') as file:
+      #       file_data = file.read()
             
         
         #         filename=f"{(text[:3]+text[-3:])}.mp3"
         response = client.files_upload(channels=channel_id,
-                                        file=file_data,
+                                        file=my_blob,
                                         initial_comment=f"CSV generated for language-keyword: \n{wordcloud_lang_to.upper()} *{wordcloud_lang_kw.title()}*: ")
         assert response["file"]  # the uploaded file
         # Delete the blob
