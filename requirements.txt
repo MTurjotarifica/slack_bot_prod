@@ -29,4 +29,3 @@ Flask-SQLAlchemy
 stop-words
 wikipedia
 pillow
-stylecloud
