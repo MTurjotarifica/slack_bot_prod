@@ -41,7 +41,7 @@ import scipy.signal
 import slack
 
 from sqlalchemy import create_engine, Table, MetaData
-from sqlalchemy import text as sqlalctext #edit st 2023-03-07
+from sqlalchemy import text as sqlalctext #edit st 2023-03-07#
 
 # from vis_functions import *
 
