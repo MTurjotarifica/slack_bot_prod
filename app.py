@@ -1014,7 +1014,11 @@ def backgroundworker_gdelt_csv_trigger(gdelt_text, response_url, channel_id):
             file_data = file.read()
             
         # filename = "gdelt_file.csv"
-        response = client.files_upload(channels=channel_id, file=file_data, filetype="csv", initial_comment=f"CSV generated for Gdelt keyword: \n{gdelt_text.upper()}: ")
+        response = client.files_upload(channels=channel_id,
+                                        filename=filename, # added filename parameter and updated formatting edit mar 15, 2023
+                                        file=file_data, 
+                                        filetype="csv", 
+                                        initial_comment=f"CSV generated for Gdelt keyword: \n{gdelt_text.upper()}: ")
         assert response["file"]  # the uploaded file
         # Delete the blob
 
