@@ -1152,8 +1152,8 @@ def backgroundworker_wiki_csv_trigger(wordcloud_lang_to, wordcloud_lang_kw, resp
         assert response["file"]  # the uploaded file
         # Delete the blob
 
-        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-        blob_client.delete_blob()
+      #   blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+      #   blob_client.delete_blob()
         
     except SlackApiError as e:
         # You will get a SlackApiError if "ok" is False
