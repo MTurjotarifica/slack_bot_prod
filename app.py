@@ -1013,16 +1013,13 @@ def backgroundworker_gdelt_csv_trigger(gdelt_text, response_url, channel_id):
         with open(filename, 'rb') as file:
             file_data = file.read()
             
-        
         # filename = "gdelt_file.csv"
-        response = client.files_upload(channels=channel_id,
-                                        file=file_data,
-                                        initial_comment=f"CSV generated for Gdelt keyword: \n{gdelt_text.upper()}: ")
+        response = client.files_upload(channels=channel_id, file=file_data, filetype="csv", initial_comment=f"CSV generated for Gdelt keyword: \n{gdelt_text.upper()}: ")
         assert response["file"]  # the uploaded file
         # Delete the blob
 
-        # blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-        # blob_client.delete_blob()
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+        blob_client.delete_blob()
         
     except SlackApiError as e:
         # You will get a SlackApiError if "ok" is False
