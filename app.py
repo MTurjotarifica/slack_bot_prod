@@ -44,6 +44,10 @@ import slack
 import wikipedia
 from nltk import tokenize #wiki sentences
 
+import nltk
+nltk.download('punkt')
+
+
 from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy import text as sqlalctext #edit st 2023-03-07
 
