@@ -739,7 +739,224 @@ def interactive_trigger():
 	
 
         #client.chat_postMessage(channel=channel_id, text=f"dd_vis_blocks_indexdate_act working kw: {condition_list_dd_vis[-3]} & startd: {condition_list_dd_vis[-2]} & indexd: {condition_list_dd_vis[-1]} & responseurl: {response_url} & chID:{channel_id}")
+
+################ New addition after all working ###############################################
+
+    elif action_id == "wordcloud_kw_inp_act":
+        payload = json.loads(data2['payload'])
+        #obtain the value inserted in the text prompt
+        kw_value=payload['actions'][0]['value']
         
+        condition_list.append(kw_value)
+        
+
+        
+        #block to select language in wordcloud
+        wordcloud_lang_block =  [
+    		{
+    			"type": "input",
+    			"element": {
+    				"type": "static_select",
+    				"placeholder": {
+    					"type": "plain_text",
+    					"text": "Select an item",
+    					"emoji": True
+    				},
+    				"options": [
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "English",
+    							"emoji": True
+    						},
+    						"value": "en"
+    					},
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "German",
+    							"emoji": True
+    						},
+    						"value": "de"
+    					},
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "Spanish",
+    							"emoji": True
+    						},
+    						"value": "es"
+    					}
+    				],
+    				"action_id": "wordcloud_kw_lang_act"
+    			},
+    			"label": {
+    				"type": "plain_text",
+    				"text": "Select Language for Wordcloud",
+    				"emoji": True
+    			}}]
+        
+        #sending kw_value and language selection dropdown
+        client.chat_postMessage(channel='#asb_dd_top10_changes',
+                                text=f"{kw_value}    {response_url}",
+                                blocks=wordcloud_lang_block
+                                )
+        
+    elif action_id == "wordcloud_kw_lang_act":
+        payload = json.loads(data2['payload'])
+        kw_value=payload['actions'][0]['selected_option']['value']
+        condition_list.append(kw_value)
+        
+        
+        #creating a block for shape selection
+        wordcloud_shape_block=[
+    		{
+    			"type": "input",
+    			"element": {
+    				"type": "static_select",
+    				"placeholder": {
+    					"type": "plain_text",
+    					"text": "Select an item",
+    					"emoji": True
+    				},
+    				"options": [
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "500 PX",
+    							"emoji": True
+    						},
+    						"value": "fab fa-500px"
+    					},
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "Accessible Icon",
+    							"emoji": True
+    						},
+    						"value": "fab fa-accessible-icon"
+    					},
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "Accusoft",
+    							"emoji": True
+    						},
+    						"value": "fab fa-accusoft"
+    					},
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "Coffee",
+    							"emoji": True
+    						},
+    						"value": "fas fa-coffee"
+    					},
+    				],
+    				"action_id": "wordcloud_shape_act"
+    			},
+    			"label": {
+    				"type": "plain_text",
+    				"text": "Select shape for Wordcloud",
+    				"emoji": True
+    			}
+    		}
+    	]
+        
+        #sending kw_value and language selection dropdown
+        client.chat_postMessage(channel='#asb_dd_top10_changes',
+                                text=f"{kw_value}     {response_url}",
+                                blocks=wordcloud_shape_block2
+                                )
+        
+    elif action_id == "wordcloud_shape_act":
+        payload = json.loads(data2['payload'])
+        #obtaining kw_value and appending value to list
+        kw_value=payload['actions'][0]['selected_option']['value']
+        condition_list.append(kw_value)
+        
+        #creating a block color scheme pick
+        wordcloud_color_block=[
+    		{
+    			"type": "divider"
+    		},
+    		{
+    			"type": "input",
+    			"element": {
+    				"type": "static_select",
+    				"placeholder": {
+    					"type": "plain_text",
+    					"text": "Select an item",
+    					"emoji": True
+    				},
+    				"options": [
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "Blue-Green",
+    							"emoji": True
+    						},
+    						"value": "BluGrn_4"
+    					},
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "Blue-Yellow",
+    							"emoji": True
+    						},
+    						"value": "BluYl_3"
+    					},
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "Brown-Yellow",
+    							"emoji": True
+    						},
+    						"value": "BrwnYl_2"
+    					},
+    					{
+    						"text": {
+    							"type": "plain_text",
+    							"text": "Burgundy",
+    							"emoji": True
+    						},
+    						"value": "Burg_2"
+    					}
+    				],
+    				"action_id": "wordcloud_color_act"
+    			},
+    			"label": {
+    				"type": "plain_text",
+    				"text": "Please choose a color palette",
+    				"emoji": True
+    			}
+    		}
+    	]
+        
+        #sending kw_value and language selection dropdown
+        client.chat_postMessage(channel='#asb_dd_top10_changes',
+                                text=f"{kw_value}     {response_url}",
+                                blocks=wordcloud_color_block
+                                )
+        
+    elif action_id == "wordcloud_color_act":
+        payload = json.loads(data2['payload'])
+        #obtaining kw_value and appending value to list
+        kw_value=payload['actions'][0]['selected_option']['value']
+        condition_list.append(kw_value)
+    #def backgroundworker_wordcloud_shape(wordcloud_lang_to, 
+                                            #wordcloud_lang_kw, 
+                                            #wordcloud_shape_kw, 
+                                            #response_url):
+                                                
+        thr = Thread(target=backgroundworker_wordcloud_shape, args=[condition_list[-3], 
+                                                                    condition_list[-4], 
+                                                                    condition_list[-2],
+                                                                    condition_list[-1],
+                                                                    response_url])
+        thr.start()   
+
+################ New addition after all working ends -------------------------------------- 
     else:
         client.chat_postMessage(channel=channel_id, text="Error: Please try again with different values.")
         #pass
@@ -1312,6 +1529,375 @@ def dd_vis_trigger():
     #returning empty string with 200 response
     return 'dd_vis trigger works', 200
 #######################################################__________________________________
+
+#######################################################################################
+#background worker for creating wordcloud from wikipedia api
+def backgroundworker_wordcloud(wordcloud_lang_to, wordcloud_lang_kw, response_url, channel_id):
+
+    # your task
+    def wikitext(key,lang):
+        """ Get Wikipedia Raw Text for Specific Keyword in Specific Language (https://en.wikipedia.org/wiki/List_of_Wikipedias#Lists)
+    
+        Args:
+            key (str): Keyword
+            lang (str): Wikipedia Geo WP Code ('de')
+    
+        Returns:
+            str: Content of Wiki Site
+        """
+        # Set Wikipedia language to geo
+        wikipedia.set_lang(lang)
+        # Get all suggested results for the query of key in wiki
+        all_results = wikipedia.search(key) 
+        # Select the first suggested result
+        key_original = all_results[0]
+        # Get the resulting wikipedia page for key_original
+        result = wikipedia.page(key_original, auto_suggest=False)
+        # Return the Content of the result
+        return result.content
+
+    def cloud(txt,words,lang,col_palette,name):
+        
+        """ Plots Wordcloud and saves png to Desktop
+    
+        Args:
+            txt (str): Input text
+            words (list): List of additional Stopwords
+            lang (str): Language of text/ to be used for stopwords
+            col_palette (str): Color palette from https://jiffyclub.github.io/palettable/ example: cartocolors.sequential.Burg_6
+            name (str): Filename
+        """
+        # Set color palette for wordcloud
+        if col_palette == None:
+            col_palette = 'cartocolors.sequential.Burg_6'
+        else:
+            pass
+        # Get list of stopwords in considered language
+        stop_words = get_stop_words(lang)
+        # Add additional words to stopwords
+        for elem in words:
+            stop_words.append(elem)
+        # Generate wordcloud
+        style_cloud_img = stylecloud.gen_stylecloud(
+                            text=txt,
+                            icon_name= "fas fa-square",
+                            palette=col_palette,
+                            background_color='black',
+                            output_name="file.png",
+                            collocations=False,
+                            max_font_size=400,
+                            size=512,
+                            custom_stopwords=stop_words
+                            )
+        
+        return style_cloud_img
+    
+    # uploading the file to azure blob storage
+    # creating variable to use in blob_service_client
+    container_string=os.environ["CONNECTION_STRING"]
+    storage_account_name = "storage4slack"
+    # creating variable to use in container_client
+    container_name = "wordcloud"
+    blob_service_client = BlobServiceClient.from_connection_string (container_string) 
+    container_client = blob_service_client.get_container_client(container_name)
+    filename = "file.png"
+    blob_client = container_client.get_blob_client(filename)
+    blob_name= filename
+    with open(filename, "rb") as data:
+        blob_client.upload_blob(data)
+    
+    # Define input
+    keyword = f'{wordcloud_lang_kw}'
+    language = f'{wordcloud_lang_to}'
+    palette = None
+    addwords = []
+    
+    # Generate text from wikipedia article
+    text = wikitext(wordcloud_lang_kw, wordcloud_lang_to)
+    
+    # Generate wordcloud
+    cloud(text,addwords,language,palette,keyword+'_'+language)
+    
+    #payload is required to to send second message after task is completed
+    payload = {"text":"your task is complete",
+                "username": "bot"}
+    
+    #uploading the file to slack using bolt syntax for py
+    try:
+        # Download the blob as binary data
+        blob_client = blob_service_client.get_blob_client(container_name, blob_name)
+        blob_data = blob_client.download_blob().readall()
+        
+        # Open the audio file and read its contents
+        with open(filename, 'rb') as file:
+            file_data = file.read()
+
+        # filename=f"wordcloud/file.png"
+        response = client.files_upload(channels=channel_id,
+                                        file=file_data,
+                                        filetype="png",
+                                        initial_comment=f"Wordcloud generated for language-keyword: \n{wordcloud_lang_to.upper()} *{wordcloud_lang_kw.title()}*: ")
+        assert response["file"]  # the uploaded file
+    except SlackApiError as e:
+        # You will get a SlackApiError if "ok" is False
+        assert e.response["ok"] is False
+        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
+        print(f"Got an error: {e.response['error']}")    
+    
+    requests.post(response_url,data=json.dumps(payload))
+
+
+#background worker for creating wordcloud from wikipedia api and provides selection of shape
+def backgroundworker_wordcloud_shape(wordcloud_lang_to, wordcloud_lang_kw, wordcloud_shape_kw, wordcloud_color_kw, response_url, channel_id):
+    
+    
+    # your task
+    def wikitext(key,lang):
+        """ Get Wikipedia Raw Text for Specific Keyword in Specific Language (https://en.wikipedia.org/wiki/List_of_Wikipedias#Lists)
+    
+        Args:
+            key (str): Keyword
+            lang (str): Wikipedia Geo WP Code ('de')
+    
+        Returns:
+            str: Content of Wiki Site
+        """
+        # Set Wikipedia language to geo
+        wikipedia.set_lang(lang)
+        # Get all suggested results for the query of key in wiki
+        all_results = wikipedia.search(key) 
+        # Select the first suggested result
+        key_original = all_results[0]
+        # Get the resulting wikipedia page for key_original
+        result = wikipedia.page(key_original, auto_suggest=False)
+        # Return the Content of the result
+        return result.content
+
+    def cloud(txt, words,lang,col_palette,name, icon_name):
+        
+        """ Plots Wordcloud and saves png to Desktop
+    
+        Args:
+            txt (str): Input text
+            words (list): List of additional Stopwords
+            lang (str): Language of text/ to be used for stopwords
+            col_palette (str): Color palette from https://jiffyclub.github.io/palettable/ example: cartocolors.sequential.Burg_6
+            name (str): Filename,
+            icon_name (str): icon shape parameter
+        """
+        # Set color palette for wordcloud
+        if col_palette == None:
+            col_palette = 'cartocolors.sequential.Burg_6'
+        else:
+            pass
+        # Get list of stopwords in considered language
+        stop_words = get_stop_words(lang)
+        # Add additional words to stopwords
+        for elem in words:
+            stop_words.append(elem)
+        # Generate wordcloud
+        style_cloud_img = stylecloud.gen_stylecloud(
+                            text=txt,
+                            icon_name= f"{wordcloud_shape_kw}",
+                            palette=col_palette,
+                            background_color='black',
+                            output_name=os.path.expanduser(f"wordcloud/file.png"),
+                            collocations=False,
+                            max_font_size=400,
+                            size=512,
+                            custom_stopwords=stop_words
+                            )
+        
+        return style_cloud_img
+    
+    # Define input
+    keyword = f'{wordcloud_lang_kw}'
+    language = f'{wordcloud_lang_to}'
+    palette = f'cartocolors.sequential.{wordcloud_color_kw}'
+    addwords = []
+    icon_name = f'{wordcloud_shape_kw}'
+    
+    # Generate text from wikipedia article
+    text = wikitext(wordcloud_lang_kw, wordcloud_lang_to)
+    
+    # Generate wordcloud
+    cloud(text,addwords,language,palette,keyword+'_'+language, icon_name)
+    
+    #payload is required to to send second message after task is completed
+    payload = {"text":"your task is complete",
+                "username": "bot"}
+    
+    
+    #uploading the file to slack using bolt syntax for py
+    try:
+        filename=f"wordcloud/file.png"
+        response = client.files_upload(channels=channel_id,
+                                        file=filename,
+                                        initial_comment=f"Wordcloud generated for language-keyword: \n{wordcloud_lang_to.upper()} *{wordcloud_lang_kw.title()}*:")
+        assert response["file"]  # the uploaded file
+    except SlackApiError as e:
+        # You will get a SlackApiError if "ok" is False
+        assert e.response["ok"] is False
+        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
+        print(f"Got an error: {e.response['error']}")    
+    
+    # client.chat_postMessage(channel='#asb_dd_top10_changes',
+    #                         text="*Usage Hint*: \nPlease use the slash command again to generate new Visualization."
+    #                         )
+    
+    
+
+    
+    requests.post(response_url,data=json.dumps(payload))
+
+
+#wordcloud trigger slash command which creates image from wikipedia API 
+#and posts to slack
+@app.route('/wordcloud_trigger', methods=['POST'])
+def wordcloud_trigger():
+    data = request.form
+    #we are usging data2 to parse the information
+    data2 = request.form.to_dict()
+    #print(data)
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+    #getting language to form wordclouds from
+    wordcloud_lang_to = data.get('text').split()[0].lower()
+    wordcloud_lang_kw = ' '.join(data.get('text').split()[1:])
+    
+    
+    response_url = data.get("response_url")
+    #event = payload.get('event', {})
+    #text = event.get('text')
+    greeting_message = "Processing your request. Please wait."
+    ending_message = "Process executed successfully"
+
+    
+    client.chat_postMessage(channel=channel_id,
+                            text="Wordcloud image loading. Please wait."
+                            )
+    
+    
+    #triggering backgroundworker for deepl with arguments lang to translate from
+    #translate to and text to translate
+    thr = Thread(target=backgroundworker_wordcloud, 
+                 args=[wordcloud_lang_to,
+                       wordcloud_lang_kw,
+                       response_url,
+                       channel_id]
+                 )
+    
+    thr.start()
+    return f'{greeting_message}', 200
+
+
+#wordcloud_shape_trigger slash command which creates csv from Wikipedia API 
+#and posts to slack
+@app.route('/wordcloud_shape_trigger', methods=['POST'])
+def wordcloud_shape_trigger():
+    #condition_list reset
+    condition_list=[]
+    
+    data = request.form
+    #we are usging data2 to parse the information
+    data2 = request.form.to_dict()
+    #print(data)
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+    #getting language to form wordclouds from
+    #wordcloud_lang_to = data.get('text').split()[0].lower()
+    #wordcloud_lang_kw = ' '.join(data.get('text').split()[1:])
+    
+    
+    response_url = data.get("response_url")
+    #event = payload.get('event', {})
+    #text = event.get('text')
+    greeting_message = "Processing your request. Please wait."
+    ending_message = "Process executed successfully"
+    
+    #block to obtain wordcloud keyword
+    word_cloud_kw_block = [
+		{
+			"type": "divider"
+		},
+		{
+			"dispatch_action": True,
+			"type": "input",
+			"element": {
+				"type": "plain_text_input",
+				"action_id": "wordcloud_kw_inp_act"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Please provide the keyword for Wordcloud",
+				"emoji": True
+			}
+		}
+	]
+    
+    
+    
+    client.chat_postMessage(channel= channel_id,
+                            text=f"Please provide the keyword for wordcloud",
+                            blocks=word_cloud_kw_block
+                            )
+    
+    
+    #triggering backgroundworker for deepl with arguments lang to translate from
+    #translate to and text to translate
+    # thr = Thread(target=backgroundworker_wordcloud_shape, 
+    #              args=[wordcloud_lang_to,
+    #                    wordcloud_lang_kw,
+    #                    wordcloud_shape,
+    #                    response_url,
+    #                    channel_id]
+    #              )
+    
+    # thr.start()
+    return f'{greeting_message}', 200
+
+
+
+
+#wiki_csv trigger slash command which creates csv from Wikipedia API 
+#and posts to slack
+@app.route('/wiki_csv_trigger', methods=['POST'])
+def wiki_csv_trigger():
+    data = request.form
+    #we are usging data2 to parse the information
+    data2 = request.form.to_dict()
+    #print(data)
+    user_id = data.get('user_id')
+    channel_id = data.get('channel_id')
+    #getting language to form wordclouds from
+    wordcloud_lang_to = data.get('text').split()[0].lower()
+    wordcloud_lang_kw = data.get('text')[3:]
+    
+    response_url = data.get("response_url")
+    #event = payload.get('event', {})
+    #text = event.get('text')
+    greeting_message = "Processing your request. Please wait."
+    ending_message = "Process executed successfully"
+
+    
+    client.chat_postMessage(channel='#asb_dd_top10_changes',
+                            text="CSV loading. Please wait."
+                            )
+    
+    
+    #triggering backgroundworker for deepl with arguments lang to translate from
+    #translate to and text to translate
+    thr = Thread(target=backgroundworker_wiki_csv_trigger, 
+                 args=[wordcloud_lang_to,
+                       wordcloud_lang_kw,
+                       response_url]
+                 )
+    
+    thr.start()
+    
+    #returning empty string with 200 response
+    return f'{greeting_message}', 200
+#######################################################_____________________________________
 
 #########################################################################################
 # Start the Slack app using the Flask app as a middleware
