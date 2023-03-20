@@ -33,5 +33,6 @@ pillow
 nltk
 click
 joblib
+stylecloud
 regex
 tqdm
