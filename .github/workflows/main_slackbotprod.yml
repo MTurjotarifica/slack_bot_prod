@@ -27,6 +27,15 @@ jobs:
           python -m venv venv
           source venv/bin/activate
       
+      - name: Install Wordcloud
+        run: |
+          pip install <path-to-wordcloud>.whl
+          
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+
+       
       - name: Install dependencies
         run: pip install -r requirements.txt
         
