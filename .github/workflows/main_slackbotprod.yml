@@ -75,11 +75,11 @@ jobs:
           
       - name: Copy deployment script to deployment directory
         run: |
-          cp deploy.sh $DEPLOYMENT_TARGET
+          cp deploy.sh /home/site/wwwroot
           
       - name: Make deployment script executable
         run: |
-          chmod +x $DEPLOYMENT_TARGET/deploy.sh
+          chmod +x /home/site/wwwroot/deploy.sh
           
       - name: Deploy to Azure Web App
         run: |
