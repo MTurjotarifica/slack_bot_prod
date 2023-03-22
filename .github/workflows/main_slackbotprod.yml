@@ -18,7 +18,7 @@ jobs:
         with:
           python-version: '3.11'
           
-      - name: Install system dependencies for wordcloud
+      - name: Install system dependencies for Wordcloud
         run: |
           sudo apt-get update
           sudo apt-get install -y python3-dev python3-pip build-essential python3-setuptools python3-wheel libpng-dev libfreetype6-dev
@@ -32,7 +32,7 @@ jobs:
         run: |
           pip install wordcloud-1.8.2.2-py3-none-any.whl
           
-      - name: Install sttylecloud
+      - name: Install Stylecloud
         run: |
           pip install stylecloud-0.5.1-py3-none-any.whl
           
@@ -69,33 +69,19 @@ jobs:
         with:
           python-version: '3.11'
           
-      - name: Install system dependencies for wordcloud
+      - name: Copy deployment script to deployment directory
         run: |
-          sudo apt-get update
-          sudo apt-get install -y python3-dev python3-pip build-essential python3-setuptools python3-wheel libpng-dev libfreetype6-dev
+          cp deploy.sh $DEPLOYMENT_TARGET
           
-      - name: Create and start virtual environment
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-      
-      - name: Install Wordcloud
-        run: |
-          pip install wordcloud-1.8.2.2-py3-none-any.whl
-          
-      - name: Install sttylecloud
-        run: |
-          pip install stylecloud-0.5.1-py3-none-any.whl
-      
-      - name: Install requirements
-        run: |
-          pip install -r requirements.txt
-
       - name: Deploy to Azure Web App
-        uses: azure/webapps-deploy@v2
-        id: deploy-to-webapp
-        with:
-          app-name: 'slackbotprod'
-          slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_83FBD51FE947449D98A746AFC02A6765 }}
+        run: |
+          cd $DEPLOYMENT_TARGET
+          ./deploy.sh
           
+  artifacts:
+    wordcloud-1.8.2.2-py3-none-any.whl:
+      name: wordcloud-1.8.2.2-py3-none-any.whl
+      path: ./wordcloud-1.8.2.2-py3-none-any.whl
+    stylecloud-0.5.1-py3-none-any.whl:
+      name: stylecloud-0.5.1-py3-none-any.whl
+      path: ./stylecloud-0.5.1-py3-none-any.whl
