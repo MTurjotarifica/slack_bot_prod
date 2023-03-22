@@ -49,10 +49,6 @@ jobs:
           path: |
             . 
             !venv/
-            
-          # Define the artifact files here
-          wordcloud-1.8.2.2-py3-none-any.whl: wordcloud-1.8.2.2-py3-none-any.whl
-          stylecloud-0.5.1-py3-none-any.whl: stylecloud-0.5.1-py3-none-any.whl
 
   deploy:
     runs-on: ubuntu-latest
@@ -75,15 +71,24 @@ jobs:
           
       - name: Copy deployment script to deployment directory
         run: |
-          cp deploy.sh /home/site/wwwroot
+          cp deploy.sh /temp
           
       - name: Make deployment script executable
         run: |
-          chmod +x /home/site/wwwroot/deploy.sh
+          chmod +x /temp/deploy.sh
           
       - name: Deploy to Azure Web App
         run: |
-          cd $DEPLOYMENT_TARGET
+          cd /temp
           ./deploy.sh
+          
+  artifacts:
+    wordcloud-1.8.2.2-py3-none-any.whl:
+      name: wordcloud-1.8.2.2-py3-none-any.whl
+      path: ./wordcloud-1.8.2.2-py3-none-any.whl
+    stylecloud-0.5.1-py3-none-any.whl:
+      name: stylecloud-0.5.1-py3-none-any.whl
+      path: ./stylecloud-0.5.1-py3-none-any.whl
       
 
+#
