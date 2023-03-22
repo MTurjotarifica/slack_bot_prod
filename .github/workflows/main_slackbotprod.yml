@@ -1,7 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-# More info on Python, GitHub Actions, and Azure App Service: https://aka.ms/python-webapps-actions
-
 name: Build and deploy Python app to Azure Web App - slackbotprod
 
 on:
@@ -43,10 +39,6 @@ jobs:
       - name: Install requirements
         run: |
           pip install -r requirements.txt
-
-       
-      - name: Install dependencies
-        run: pip install -r requirements.txt
         
       # Optional: Add step to run tests here (PyTest, Django test suites, etc.)
       
@@ -72,10 +64,38 @@ jobs:
           name: python-app
           path: .
           
-      - name: 'Deploy to Azure Web App'
+      - name: Set up Python version
+        uses: actions/setup-python@v1
+        with:
+          python-version: '3.11'
+          
+      - name: Install system dependencies for wordcloud
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-dev python3-pip build-essential python3-setuptools python3-wheel libpng-dev libfreetype6-dev
+          
+      - name: Create and start virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+      
+      - name: Install Wordcloud
+        run: |
+          pip install wordcloud-1.8.2.2-py3-none-any.whl
+          
+      - name: Install sttylecloud
+        run: |
+          pip install stylecloud-0.5.1-py3-none-any.whl
+      
+      - name: Install requirements
+        run: |
+          pip install -r requirements.txt
+
+      - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
           app-name: 'slackbotprod'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_83FBD51FE947449D98A746AFC02A6765 }}
+          
