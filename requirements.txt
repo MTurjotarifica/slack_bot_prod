@@ -35,5 +35,4 @@ click
 joblib
 regex
 tqdm
-wordcloud==1.8.1
-stylecloud==0.5.1
+
