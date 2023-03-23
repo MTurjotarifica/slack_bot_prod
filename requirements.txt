@@ -33,6 +33,9 @@ pillow
 nltk
 click
 joblib
+./wordcloud-1.8.2.2-py3-none-any.whl
+./stylecloud-0.5.1-py3-none-any.whl
+
 regex
 tqdm
 
