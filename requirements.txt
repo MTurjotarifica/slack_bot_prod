@@ -38,6 +38,6 @@ regex
 tqdm
 
 https://github.com/MTurjotarifica/slack_bot_prod/raw/main/wordcloud-1.8.2.2-py3-none-any.whl
-https://github.com/MTurjotarifica/slack_bot_prod/raw/main/stylecloud-0.5.1-py3-none-any.whl
+https://github.com/MTurjotarifica/slack_bot_prod/raw/main/stylecloud-0.5.2-py3-none-any.whl
 
 
