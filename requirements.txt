@@ -1,3 +1,6 @@
+git+https://github.com/amueller/word_cloud.git
+git+https://github.com/minimaxir/stylecloud.git
+
 flask
 slack_bolt
 python-dotenv
@@ -37,8 +40,7 @@ joblib
 regex
 tqdm
 
-git+https://github.com/amueller/word_cloud.git
-git+https://github.com/minimaxir/stylecloud.git
+
 
 https://github.com/MTurjotarifica/slack_bot_prod/raw/main/wordcloud-1.8.2.2-py3-none-any.whl
 https://github.com/MTurjotarifica/slack_bot_prod/raw/main/stylecloud-0.5.2-py3-none-any.whl
