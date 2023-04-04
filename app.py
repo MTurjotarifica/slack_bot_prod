@@ -334,7 +334,7 @@ def add_smoother(df,var,cutoff):
 #########################################################################################
 ############################# BACKGROUNDWORKER3 #########################################
 # backgroundworker for new combined flow
-def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_id):
+def backgroundworker3_ddviz(text, init_date, index_date, output_type, response_url, channel_id):
 
     missing_kw_block = [
 		{
@@ -525,7 +525,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
         )
 
         # write image 
-        fig.write_image(f"{text}.png")
+        fig.write_image(f"{text}.{output_type}")
             
         return 'vis completed'
     
@@ -538,7 +538,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
         index = True,
         indexdate = f'{index_date}',
         font_use = 'Roboto Mono Light for Powerline',
-        out_type = 'png'
+        out_type = f'{output_type}'
     )
 
     #payload is required to to send second message after task is completed
@@ -553,7 +553,7 @@ def backgroundworker3_ddviz(text, init_date, index_date, response_url, channel_i
     container_name = "visfunc"
     blob_service_client = BlobServiceClient.from_connection_string (container_string) 
     container_client = blob_service_client.get_container_client(container_name)
-    filename = f"{text}.png"
+    filename = f"{text}.{output_type}"
     blob_client = container_client.get_blob_client(filename)
     blob_name= filename
     # upload the file
@@ -1561,17 +1561,72 @@ def interactive_trigger():
         kw_value=payload['actions'][0]['selected_date']
         condition_list_dd_vis.append(kw_value)
         
-        # condition_list_dd_vis[-3] is keyword
-        # condition_list_dd_vis[-2] is start date
-        # condition_list_dd_vis[-1] is index date
-        
 
+        dd_vis_blocks_outputtype = [
+		{
+			"type": "input",
+			"element": {
+				"type": "static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select an item",
+					"emoji": True
+				},
+				"options": [
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "html",
+							"emoji": True
+						},
+						"value": "html"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "png",
+							"emoji": True
+						},
+						"value": "png"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "svg",
+							"emoji": True
+						},
+						"value": "svg"
+					}
+				],
+				"action_id": "dd_vis_blocks_image_export_action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Select output file format",
+				"emoji": True
+			}
+		}]
+        #sending kw_value and language selection dropdown
+        client.chat_postMessage(channel=channel_id,
+                                text=f"{kw_value}     {response_url}",
+                                blocks=dd_vis_blocks_outputtype
+                                )
+    elif action_id == "dd_vis_blocks_image_export_action":
+        payload = json.loads(data2['payload'])
+        kw_value=payload['actions'][0]['selected_option']['value']
+        condition_list.append(kw_value)
+
+        # condition_list_dd_vis[-4] is keyword
+        # condition_list_dd_vis[-3] is start date
+        # condition_list_dd_vis[-2] is index date
+        # condition_list_dd_vis[-1] is output format
         
-        thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-3], 
-                                                           condition_list_dd_vis[-2], 
-                                                           condition_list_dd_vis[-1], 
-                                                           response_url, 
-                                                           channel_id])
+        thr = Thread(target=backgroundworker3_ddviz, args=[condition_list_dd_vis[-4],
+                                                            condition_list_dd_vis[-3],
+                                                            condition_list_dd_vis[-2], 
+                                                            condition_list_dd_vis[-1],
+                                                            response_url,
+                                                            channel_id])
         thr.start()
         
         client.chat_postMessage(channel=channel_id, text="A backgroundworker is running your task. Please wait.")
