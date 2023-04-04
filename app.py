@@ -1614,7 +1614,7 @@ def interactive_trigger():
     elif action_id == "dd_vis_blocks_image_export_action":
         payload = json.loads(data2['payload'])
         kw_value=payload['actions'][0]['selected_option']['value']
-        condition_list.append(kw_value)
+        condition_list_dd_vis.append(kw_value)
 
         # condition_list_dd_vis[-4] is keyword
         # condition_list_dd_vis[-3] is start date
