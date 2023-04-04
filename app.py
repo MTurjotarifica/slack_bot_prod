@@ -525,7 +525,12 @@ def backgroundworker3_ddviz(text, init_date, index_date, output_type, response_u
         )
 
         # write image 
-        fig.write_image(f"{text}.{output_type}")
+        if out_type == 'svg':
+            fig.write_image(f"{text}.{output_type}")
+        elif out_type == 'html':
+            fig.write_html(f"{text}.{output_type}")
+        else:
+            fig.write_image(f"{text}.{output_type}")
             
         return 'vis completed'
     
@@ -570,14 +575,33 @@ def backgroundworker3_ddviz(text, init_date, index_date, output_type, response_u
         with open(filename, 'rb') as file:
             file_data = file.read()
         
-        # filename=f"{text}.png"
-        response = client.files_upload(channels=channel_id,
+        # write image 
+        if output_type == 'svg':
+            # filename=f"{text}.png"
+            response = client.files_upload(channels=channel_id,
                                         file=file_data,
+                                        filename=filename,
+                                        filetype="svg",
                                         initial_comment="Visualization: ")
-        assert response["file"]  # the uploaded file
+            assert response["file"]  # the uploaded file
+        elif output_type == 'html':
+            # filename=f"{text}.png"
+            response = client.files_upload(channels=channel_id,
+                                        file=file_data,
+                                        filename=filename,
+                                        filetype="html",
+                                        initial_comment="Visualization: ")
+            assert response["file"]  # the uploaded file
+        else:
+            # filename=f"{text}.png"
+            response = client.files_upload(channels=channel_id,
+                                        file=file_data,
+                                        filename=filename,
+                                        filetype="png",
+                                        initial_comment="Visualization: ")
+            assert response["file"]  # the uploaded file
         
         # Delete the blob
-
         blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
         blob_client.delete_blob()
         
