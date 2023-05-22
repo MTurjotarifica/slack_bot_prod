@@ -672,3 +672,262 @@ wordcloud_shape_block2 = [{"type": "input",
             "text": "Select shape for Wordcloud",
             "emoji": True}}]
 #######################################################__________________________________
+
+# This creates the text prompt in slack block kit
+dd_vis_trigger_block = [
+      {
+      "type": "divider"
+      },
+      {
+      "dispatch_action": True,
+      "type": "input",
+      "element": {
+            "type": "plain_text_input",
+            "action_id": "dd_vis_trigger_act"
+      },
+      "label": {
+            "type": "plain_text",
+            "text": "Please type the keyword for the visualization ",
+            "emoji": True
+      }
+      }
+]
+
+# Block to obtain wordcloud keyword
+word_cloud_kw_block = [
+      {
+            "type": "divider"
+      },
+      {
+            "dispatch_action": True,
+            "type": "input",
+            "element": {
+                  "type": "plain_text_input",
+                  "action_id": "wordcloud_kw_inp_act"
+            },
+            "label": {
+                  "type": "plain_text",
+                  "text": "Please provide the keyword for Wordcloud",
+                  "emoji": True
+            }
+      }
+]
+
+dd_vis_blocks_outputtype = [
+		{
+			"type": "input",
+			"element": {
+				"type": "static_select",
+				"placeholder": {
+					"type": "plain_text",
+					"text": "Select an item",
+					"emoji": True
+				},
+				"options": [
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "html",
+							"emoji": True
+						},
+						"value": "html"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "png",
+							"emoji": True
+						},
+						"value": "png"
+					},
+					{
+						"text": {
+							"type": "plain_text",
+							"text": "svg",
+							"emoji": True
+						},
+						"value": "svg"
+					}
+				],
+				"action_id": "dd_vis_blocks_image_export_action"
+			},
+			"label": {
+				"type": "plain_text",
+				"text": "Select output file format",
+				"emoji": True
+			}
+		}]
+
+# Datetime picker block for startdate that is triggered after text input block
+dd_vis_blocks_startdate = [
+      {
+            "type": "input",
+            "element": {
+                  "type": "datepicker",
+                  "initial_date": "2022-01-01",
+                  "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select a date",
+                        "emoji": True
+                  },
+                  "action_id": "dd_vis_blocks_startdate_act"
+            },
+            "label": {
+                  "type": "plain_text",
+                  "text": "Please select the startdate for the Visualization",
+                  "emoji": True
+            }
+      }
+]
+        
+
+# Datetime picker block for startdate that is triggered after text input block
+dd_vis_blocks_indexdate = [
+      {
+            "type": "input",
+            "element": {
+                  "type": "datepicker",
+                  "initial_date": "2022-06-01",
+                  "placeholder": {
+                        "type": "plain_text",
+                        "text": "Please select the index date for the Visualization",
+                        "emoji": True
+                  },
+                  "action_id": "dd_vis_blocks_indexdate_act"
+            },
+            "label": {
+                  "type": "plain_text",
+                  "text": "Please select the index date for the Visualization",
+                  "emoji": True
+            }
+      }
+]
+
+# Block to select language in wordcloud
+wordcloud_lang_block =  [
+      {
+            "type": "input",
+            "element": {
+                  "type": "static_select",
+                  "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select an item",
+                        "emoji": True
+                  },
+                  "options": [
+                        {
+                              "text": {
+                                    "type": "plain_text",
+                                    "text": "English",
+                                    "emoji": True
+                              },
+                              "value": "en"
+                        },
+                        {
+                              "text": {
+                                    "type": "plain_text",
+                                    "text": "German",
+                                    "emoji": True
+                              },
+                              "value": "de"
+                        },
+                        {
+                              "text": {
+                                    "type": "plain_text",
+                                    "text": "Spanish",
+                                    "emoji": True
+                              },
+                              "value": "es"
+                        }
+                  ],
+                  "action_id": "wordcloud_kw_lang_act"
+            },
+            "label": {
+                  "type": "plain_text",
+                  "text": "Select Language for Wordcloud",
+                  "emoji": True
+      }}]
+
+# Creating a block color scheme pick
+wordcloud_color_block=[
+      {
+            "type": "divider"
+      },
+      {
+            "type": "input",
+            "element": {
+                  "type": "static_select",
+                  "placeholder": {
+                        "type": "plain_text",
+                        "text": "Select an item",
+                        "emoji": True
+                  },
+                  "options": [
+                        {
+                              "text": {
+                                    "type": "plain_text",
+                                    "text": "Blue-Green",
+                                    "emoji": True
+                              },
+                              "value": "BluGrn_4"
+                        },
+                        {
+                              "text": {
+                                    "type": "plain_text",
+                                    "text": "Blue-Yellow",
+                                    "emoji": True
+                              },
+                              "value": "BluYl_3"
+                        },
+                        {
+                              "text": {
+                                    "type": "plain_text",
+                                    "text": "Brown-Yellow",
+                                    "emoji": True
+                              },
+                              "value": "BrwnYl_2"
+                        },
+                        {
+                              "text": {
+                                    "type": "plain_text",
+                                    "text": "Burgundy",
+                                    "emoji": True
+                              },
+                              "value": "Burg_2"
+                        }
+                  ],
+                  "action_id": "wordcloud_color_act"
+            },
+            "label": {
+                  "type": "plain_text",
+                  "text": "Please choose a color palette",
+                  "emoji": True
+            }
+      }
+]
+
+missing_kw_block = [
+		{
+			"type": "divider"
+		},
+		{
+			"type": "section",
+			"text": {
+				"type": "mrkdwn",
+				"text": ":mag_right: *Keyword* not in *Digital Demand* Database.\n\n Please try the command again with a _different keyword_.  "
+			}
+		},
+		{
+			"type": "divider"
+		},
+		{
+			"type": "context",
+			"elements": [
+				{
+					"type": "plain_text",
+					"text": "Insight Generation: :beta:",
+					"emoji": True
+				}
+			]
+		}
+	]
