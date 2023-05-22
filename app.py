@@ -590,6 +590,11 @@ def backgroundworker3_ddviz(text, init_date, index_date, output_type, response_u
 ########################### END OF BACKGROUNDWORKER3 ####################################
 #######################################################__________________________________
 
+#creating an empty list for condition branching on wordcloud
+condition_list = []
+
+#creating an empty list for condition branching on dd_vis_trigger
+condition_list_dd_vis = []
 
 #########################################################################################
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
