@@ -7,7 +7,7 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slackeventsapi import SlackEventAdapter
 
-from blocks import *
+from Blocks.blocks import *
 from vis_functions import *
 
 # Backgroundworker for new combined flow
