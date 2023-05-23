@@ -54,9 +54,9 @@ from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy import text as sqlalctext #edit st 2023-03-07
 
 # from vis_functions import *
-from blocks import *
+from Blocks.blocks import *
 from BackgroundWorkers.vis_functions import *
-from database import *
+from Database.database import *
 from BackgroundWorkers.wiki_csv import *
 from BackgroundWorkers.wordcloud_slack import *
 from BackgroundWorkers.ddviz import *
