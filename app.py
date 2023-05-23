@@ -55,11 +55,11 @@ from sqlalchemy import text as sqlalctext #edit st 2023-03-07
 
 # from vis_functions import *
 from blocks import *
-from vis_functions import *
+from BackgroundWorkers.vis_functions import *
 from database import *
-from wiki_csv import *
-from wordcloud_slack import *
-from ddviz import *
+from BackgroundWorkers.wiki_csv import *
+from BackgroundWorkers.wordcloud_slack import *
+from BackgroundWorkers.ddviz import *
 
 
 load_dotenv()
@@ -72,7 +72,6 @@ slack_app = App(
     signing_secret=os.environ["SLACK_SIGNING_SECRET"]
 )
 
-
 client = slack_app.client
 
 
@@ -80,9 +79,6 @@ df_raw = load_dd_df()
 
 # converting date to datetime object
 df_raw['date'] = pd.to_datetime(df_raw['date'])
-#######################################################__________________________________
-
-
 
 
 #creating an empty list for condition branching on wordcloud
@@ -239,9 +235,7 @@ def interactive_trigger():
     return 'interactive trigger works', 200
 #######################################################__________________________________
 
-################################################
-# edit mar 08, 2023 fixed indentation using vs code
-# indendation errors are being caused by spyder (the ide I use)
+
 
 #########################################################################################
 # backgroundworker for mp3 post on slack
