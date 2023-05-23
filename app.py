@@ -5,7 +5,6 @@ from slack_bolt.adapter.flask import SlackRequestHandler
 from flask import Flask, request, make_response
 #from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
-from slack_sdk import WebClient
 from threading import Thread
 import azure.cognitiveservices.speech as speechsdk
 
@@ -58,6 +57,7 @@ from sqlalchemy import text as sqlalctext #edit st 2023-03-07
 from blocks import *
 from vis_functions import *
 from database import *
+from wiki_csv import *
 
 
 load_dotenv()
@@ -819,107 +819,7 @@ def gdelt_csv_trigger():
     return f'{greeting_message}', 200
 #######################################################__________________________________
 
-#################################### Note: ##############################################
-# WIKI_CSV_TRIGGER uses parameter names wordcloud_lang_to, wordcloud_lang_kw which are 
-# unrelated to wordcloud features
-# they are essentially wiki_csv_lang_to, and wiki_csv_keyword
-#########################################################################################
-#background worker for creating csv from wikipedia api
-def backgroundworker_wiki_csv_trigger(wordcloud_lang_to, wordcloud_lang_kw, response_url, channel_id):
 
-    # your task
-    def wikisentences(key,geo):
-        """ Get Wikipedia Raw Text for Specific Keyword in Specific Language (https://en.wikipedia.org/wiki/List_of_Wikipedias#Lists)
-        
-        Args:
-            key (str): Keyword
-            geo (str): Geo WP Code ('de')
-        
-        Returns:
-            df: Dataframe with Sentences from Content of Wiki Site
-        """
-        # Set Wikipedia language to geo
-        wikipedia.set_lang(geo)
-        # Get all suggested results for the query of key in wiki
-        all_results = wikipedia.search(key) 
-        # Select the first suggested result
-        key_original = all_results[0]
-        # Get the resulting wikipedia page for key_original
-        result = wikipedia.page(key_original, auto_suggest=False)
-        # Get the Content of the result
-        content_raw = result.content
-        # Split content_raw into sentences
-        sentences = tokenize.sent_tokenize(content_raw)
-        # Put the sentences into a dataframe
-        df = pd.DataFrame(data={'text': sentences})
-        
-        return df
-
-    
-    # Generate csv from wikipedia keyword and language pair
-    wikisentences(wordcloud_lang_kw, wordcloud_lang_to).to_csv('wiki_sentences.csv', 
-                                                               index_label='index') #column name is set to index
-    
-    
-    #payload is required to to send second message after task is completed
-    payload = {"text":"your task is complete",
-                "username": "bot"}
-    
-    #uploading the file to azure blob storage
-    container_string=os.environ["CONNECTION_STRING"]
-    storage_account_name = "storage4slack"
-    container_name = "wikicsv"
-    blob_service_client = BlobServiceClient.from_connection_string (container_string) 
-    container_client = blob_service_client.get_container_client(container_name)
-    filename = 'wiki_sentences.csv'
-    blob_client = container_client.get_blob_client(filename)
-    blob_name= filename
-    with open(filename, "rb") as data:
-        blob_client.upload_blob(data)
-        
-    try:
-        # Download the blob as binary data
-        blob_client = blob_service_client.get_blob_client(container_name, blob_name)
-        blob_data = blob_client.download_blob().readall()
-        
-	# Download the CSV file to a local temporary file
-        # with open(filename, "wb") as my_blob:
-        #     download_stream = blob_client.download_blob()
-        #     my_blob.write(download_stream.readall())
-	
-        # Open the audio file and read its contents
-        with open(filename, 'rb') as file:
-            file_data = file.read()
-            
-        
-        #         filename=f"{(text[:3]+text[-3:])}.mp3"
-        response = client.files_upload(channels=channel_id,
-                                        filename=filename, # added filename parameter and updated formatting edit mar 15, 2023
-                                        file=file_data, 
-                                        filetype="csv", 
-                                        initial_comment=f"CSV generated for language-keyword: \n{wordcloud_lang_to.upper()} *{wordcloud_lang_kw.title()}*: ")
-        assert response["file"]  # the uploaded file
-        # Delete the blob
-
-        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-        blob_client.delete_blob()
-        
-    except SlackApiError as e:
-        # You will get a SlackApiError if "ok" is False
-        assert e.response["ok"] is False
-        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
-        print(f"Got an error: {e.response['error']}")
-
-    requests.post(response_url,data=json.dumps(payload))
-#######################################################__________________________________
-
-#################################### Note: ##############################################
-# WIKI_CSV_TRIGGER uses parameter names wordcloud_lang_to, wordcloud_lang_kw which are 
-# unrelated to wordcloud features
-# they are essentially wiki_csv_lang_to, and wiki_csv_keyword
-#########################################################################################
-#wiki_csv trigger slash command which creates csv from Wikipedia API 
-#and posts to slack
 @app.route('/wiki_csv_trigger', methods=['POST'])
 def wiki_csv_trigger():
     data = request.form
@@ -949,10 +849,12 @@ def wiki_csv_trigger():
     #triggering backgroundworker for deepl with arguments lang to translate from
     #translate to and text to translate
     thr = Thread(target=backgroundworker_wiki_csv_trigger, 
-                 args=[wordcloud_lang_to,
+                 args=[client,
+                       wordcloud_lang_to,
                        wordcloud_lang_kw,
                        response_url,
-                       channel_id]
+                       channel_id,
+                       ]
                  )
     
     thr.start()
@@ -1129,7 +1031,7 @@ def handle_slash_command():
     # Execute the appropriate function based on the command
     if command == "/example":
         client.chat_postMessage(channel='#slack_bot_prod', text=f"it worksssss! max date: {df_raw.date.max()} & min date: {df_raw.date.min()} & blob df min date: {df_raw_10_21.date.min()}")
-        response_text = handle_example_command(text)
+
     else:
         response_text = "Unknown command: {}".format(command)
 
