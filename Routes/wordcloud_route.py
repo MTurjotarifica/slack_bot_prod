@@ -1,4 +1,5 @@
-from Imports.importFunction import *
+from flask import Flask, request, make_response
+from ..Blocks.blocks import *
 
 def wordcloud_shape_trigger(client):
     #condition_list reset
@@ -22,4 +23,3 @@ def wordcloud_shape_trigger(client):
                             )
     
     return f'{greeting_message}', 200
-#######################################################__________________________________

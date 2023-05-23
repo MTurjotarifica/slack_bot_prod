@@ -1,4 +1,4 @@
-from Imports.importFunction import *
+from BackgroundWorkers.gdelt import *
 from flask import Flask, request, make_response
 from threading import Thread
 

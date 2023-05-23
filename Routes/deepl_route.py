@@ -1,4 +1,4 @@
-from Imports.importFunction import *
+from BackgroundWorkers.deepl import *
 from flask import Flask, request, make_response
 from threading import Thread
 
@@ -36,8 +36,7 @@ def deepl_trigger_with_lang(client):
                             )
 
 
-    #triggering backgroundworker for deepl with arguments lang to translate from
-    #translate to and text to translate
+    #triggering backgroundworker for deepl with arguments lang to translate from translate to and text to translate
     thr = Thread(target=backgroundworker_deepl_text_lang, 
                  args=[client,
                        text_lang_to,
@@ -51,4 +50,3 @@ def deepl_trigger_with_lang(client):
 
     #returning empty string with 200 response
     return f'{greeting_message}', 200
-#######################################################__________________________________
