@@ -11,4 +11,11 @@ from BackgroundWorkers.gdelt import *
 from BackgroundWorkers.mp3 import *
 from BackgroundWorkers.deepl import *
 
+from Routes.mp3_route import *
+from Routes.deepl_route import *
+from Routes.gdelt_route import *
+from Routes.wiki_route import *
+from Routes.wordcloud_route import *
+from Routes.ddviz_route import *
+
 from InteractiveTrigger.interactiveTrigger import *
