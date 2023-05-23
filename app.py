@@ -53,14 +53,16 @@ from stop_words import get_stop_words
 from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy import text as sqlalctext #edit st 2023-03-07
 
-# from vis_functions import *
+# Functions to import 
 from Blocks.blocks import *
 from BackgroundWorkers.vis_functions import *
 from Database.database import *
 from BackgroundWorkers.wiki_csv import *
 from BackgroundWorkers.wordcloud_slack import *
 from BackgroundWorkers.ddviz import *
-
+from BackgroundWorkers.gdelt import *
+from BackgroundWorkers.mp3 import *
+from BackgroundWorkers.deepl import *
 
 load_dotenv()
 
@@ -237,88 +239,7 @@ def interactive_trigger():
 
 
 
-#########################################################################################
-# backgroundworker for mp3 post on slack
-def backgroundworker_mp3(text, response_url, channel_id):
-    
-    # your task
-    # The environment variables named "SPEECH_KEY" and "SPEECH_REGION"
-    
- 
-    
-    # subscription and speech_region values are obtained from azure portal
-    speech_config = speechsdk.SpeechConfig(subscription=os.environ.get('SPEECH_KEY'),
-                                           region=os.environ.get('SPEECH_REGION'))
-    
-    #to output audio to a file called file.wav
-    audio_config = speechsdk.audio.AudioOutputConfig(filename=f"{(text[:3]+text[-3:])}.mp3")
-    
-    # The language of the voice that speaks. en-GB is british accent
-    speech_config.speech_synthesis_voice_name='en-GB-RyanNeural'
-    
-    #creating speech_synthesizer object
 
-    speech_synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config, 
-                                                     audio_config=audio_config)
-    
-    speech_synthesis_result = speech_synthesizer.speak_text_async(text).get()
-
-    if speech_synthesis_result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
-        print("Speech synthesized for text [{}]".format(text))
-    elif speech_synthesis_result.reason == speechsdk.ResultReason.Canceled:
-        cancellation_details = speech_synthesis_result.cancellation_details
-        print("Speech synthesis canceled: {}".format(cancellation_details.reason))
-        if cancellation_details.reason == speechsdk.CancellationReason.Error:
-            if cancellation_details.error_details:
-                print("Error details: {}".format(cancellation_details.error_details))
-                print("Did you set the speech resource key and region values?")
-            
-    #payload is required to to send second message after task is completed
-    payload = {"text":"your task is complete",
-                "username": "bot"}
-    
-    #uploading the file to slack using bolt syntax for py
-    
-    #uploading the file to azure blob storage
-    container_string=os.environ["CONNECTION_STRING"]
-    storage_account_name = "storage4slack"
-    container_name = "mp3"
-    blob_service_client = BlobServiceClient.from_connection_string (container_string) 
-    container_client = blob_service_client.get_container_client(container_name)
-    filename = f"{(text[:3]+text[-3:])}.mp3"
-    blob_client = container_client.get_blob_client(filename)
-    blob_name= filename
-    with open(filename, "rb") as data:
-        blob_client.upload_blob(data)
-        
-    try:
-        # Download the blob as binary data
-        blob_client = blob_service_client.get_blob_client(container_name, blob_name)
-        blob_data = blob_client.download_blob().readall()
-        
-        # Open the audio file and read its contents
-        with open(filename, 'rb') as file:
-            file_data = file.read()
-            
-        
-#         filename=f"{(text[:3]+text[-3:])}.mp3"
-        response = client.files_upload(channels=channel_id,
-                                        file=file_data,
-                                        initial_comment="Audio: ")
-        assert response["file"]  # the uploaded file
-        # Delete the blob
-
-        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-        blob_client.delete_blob()
-        
-    except SlackApiError as e:
-        # You will get a SlackApiError if "ok" is False
-        assert e.response["ok"] is False
-        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
-        print(f"Got an error: {e.response['error']}")
-
-    requests.post(response_url,data=json.dumps(payload))
-#######################################################__________________________________
 
 #########################################################################################
 # mp3 trigger slash command which creates mp3 and posts to slack
@@ -344,7 +265,7 @@ def mp3_trigger():
 
 
     # triggering backgroundworker1 
-    thr = Thread(target=backgroundworker_mp3, args=[text, response_url, channel_id])
+    thr = Thread(target=backgroundworker_mp3, args=[client, text, response_url, channel_id])
     thr.start()
 
 
@@ -352,36 +273,6 @@ def mp3_trigger():
     return f'{greeting_message}', 200
 #######################################################__________________________________
 
-#########################################################################################
-# background worker for deep l 
-def backgroundworker_deepl_text_lang(text_lang_to, text_to_translate, response_url, channel_id):
-
-    # your task
-
-    # DeepL auth key is stored in environment variable which we are obtaining
-    translator = deepl.Translator(os.environ.get('DEEPL_AUTH_KEY'))
-
-    #using text argument to translate text to Specified language
-    result = translator.translate_text(f'{text_to_translate}', 
-                                       target_lang=f'{text_lang_to}') 
-
-    #storing translated in a variable
-    translated_text = result.text
-
-
-
-    #payload is required to to send second message after task is completed
-    payload = {"text":"your task is complete",
-                "username": "bot"}
-
-    #posting translated text to slack channel
-    client.chat_postMessage(channel=channel_id,
-                            text=f"{translated_text}"
-                            )
-
-
-    requests.post(response_url,data=json.dumps(payload))
-#######################################################__________________________________
 
 #########################################################################################
 #deepl trigger slash command which creates translation for speech blocks 
@@ -424,7 +315,8 @@ def deepl_trigger_with_lang():
     #triggering backgroundworker for deepl with arguments lang to translate from
     #translate to and text to translate
     thr = Thread(target=backgroundworker_deepl_text_lang, 
-                 args=[text_lang_to,
+                 args=[client,
+                       text_lang_to,
                        text_to_translate,
                        response_url,
                        channel_id
@@ -437,91 +329,7 @@ def deepl_trigger_with_lang():
     return f'{greeting_message}', 200
 #######################################################__________________________________
 
-#########################################################################################
-#background worker for creating csv from gdelt data (we are not using gdelt package)
-def backgroundworker_gdelt_csv_trigger(gdelt_text, response_url, channel_id):
 
-    # your task
-    def gdelt(key):
-        """ Gets Data from GDELT database (https://gdelt.github.io/ ; https://blog.gdeltproject.org/gdelt-doc-2-0-api-debuts/)
-    
-        Args:
-            key (str): Keyword to track
-    
-        Returns:
-            df: Dataframe with volume of articles
-        """
-    
-        # Define startdate
-        startdate = 20170101000000
-        # Get Dataframe TimelineVolInfo with urls and volume intensity 
-        df_TimelineVolInfo = pd.read_csv(f"https://api.gdeltproject.org/api/v2/doc/doc?query={key}&mode=TimelineVolInfo&startdatetime={startdate}&timezoom=yes&FORMAT=csv")
-    
-        # Get Dataframe TimelineVolRaw with information on the count of articles
-        df_TimelineVolRaw = pd.read_csv(f"https://api.gdeltproject.org/api/v2/doc/doc?query={key}&mode=TimelineVolRaw&startdatetime={startdate}&timezoom=yes&FORMAT=csv")
-    
-        # Filter only for keyword article count (not all articles)
-        df_count = df_TimelineVolRaw[df_TimelineVolRaw['Series'] == 'Article Count']
-    
-        # Rename column
-        df_count = df_count.rename(columns={'Value': 'articles' })
-    
-        # Merge both dataframes
-        df = pd.merge(df_count[['Date','articles']],df_TimelineVolInfo, how='left', on=['Date'])
-    
-        # Save dataframe to csv
-        df.to_csv((f"{gdelt_text}.csv"), index=False) # updated filename and directory edit mar 15 2023
-        
-        return 'csv completed'
-    
-    # using the function defined above to produce csv
-    # we are passing in the key obtained from the slash command in the function
-    gdelt(f'{gdelt_text}')
-    #payload is required to to send second message after task is completed
-    payload = {"text":"your task is complete",
-                "username": "bot"}
-    
-    #uploading the file to azure blob storage
-    container_string=os.environ["CONNECTION_STRING"]
-    storage_account_name = "storage4slack"
-    container_name = "gdelt"
-    blob_service_client = BlobServiceClient.from_connection_string (container_string) 
-    container_client = blob_service_client.get_container_client(container_name)
-    filename = f"{gdelt_text}.csv"
-    blob_client = container_client.get_blob_client(filename)
-    blob_name= filename
-    with open(filename, "rb") as data:
-        blob_client.upload_blob(data)
-        
-    try:
-        # Download the blob as binary data
-        blob_client = blob_service_client.get_blob_client(container_name, blob_name)
-        blob_data = blob_client.download_blob().readall()
-        
-        # Open the gdelt file and read its contents
-        with open(filename, 'rb') as file:
-            file_data = file.read()
-            
-        # filename = "gdelt_file.csv"
-        response = client.files_upload(channels=channel_id,
-                                        filename=filename, # added filename parameter and updated formatting edit mar 15, 2023
-                                        file=file_data, 
-                                        filetype="csv", 
-                                        initial_comment=f"CSV generated for Gdelt keyword: \n{gdelt_text.upper()}: ")
-        assert response["file"]  # the uploaded file
-        # Delete the blob
-
-        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-        blob_client.delete_blob()
-        
-    except SlackApiError as e:
-        # You will get a SlackApiError if "ok" is False
-        assert e.response["ok"] is False
-        assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
-        print(f"Got an error: {e.response['error']}")
-
-    requests.post(response_url,data=json.dumps(payload))
-#######################################################__________________________________
 
 #########################################################################################
 #creating a slash command for gdelt api to create a csv
@@ -551,7 +359,8 @@ def gdelt_csv_trigger():
     #triggering backgroundworker for deepl with arguments lang to translate from
     #translate to and text to translate
     thr = Thread(target=backgroundworker_gdelt_csv_trigger, 
-                 args=[gdelt_text,
+                 args=[client,
+                       gdelt_text,
                        response_url,
                        channel_id]
                  )
