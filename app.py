@@ -80,7 +80,7 @@ df_raw['date'] = pd.to_datetime(df_raw['date'])
 
 #########################################################################################
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
-def interactive_trigger_route(client):
+def interactive_trigger():
     #creating an empty list for condition branching on wordcloud
     condition_list = []
 
