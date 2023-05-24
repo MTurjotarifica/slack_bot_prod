@@ -1,4 +1,4 @@
-from ..Blocks.blocks import *
+from Blocks.blocks import *
 from flask import Flask, request, make_response
 
 def dd_vis_trigger(client):
