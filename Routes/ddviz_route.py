@@ -1,4 +1,3 @@
-from ..Imports.importFunction import *
 from ..Blocks.blocks import *
 from flask import Flask, request, make_response
 
