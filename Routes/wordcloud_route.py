@@ -1,5 +1,5 @@
 from flask import Flask, request, make_response
-from ..Blocks.blocks import *
+from Blocks.blocks import *
 
 def wordcloud_shape_trigger(client):
     #condition_list reset
