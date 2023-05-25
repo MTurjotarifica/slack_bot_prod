@@ -8,7 +8,7 @@ from slack_sdk.errors import SlackApiError
 from slackeventsapi import SlackEventAdapter
 
 from Blocks.blocks import *
-from vis_functions import *
+from vis.vis_functions import *
 
 # Backgroundworker for new combined flow
 def backgroundworker3_ddviz(client, df_raw, text, init_date, index_date, output_type, response_url, channel_id):
