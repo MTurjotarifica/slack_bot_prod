@@ -1,9 +1,9 @@
-#mp3 command added 
 import os
 from slack_bolt import App
 from slack_bolt.adapter.flask import SlackRequestHandler
 from flask import Flask, request, make_response
-#from flask_sqlalchemy import SQLAlchemy
+# From flask_sqlalchemy import SQLAlchemy
+
 from dotenv import load_dotenv
 from threading import Thread
 import azure.cognitiveservices.speech as speechsdk
@@ -25,7 +25,7 @@ from datetime import datetime as dt
 from datetime import timedelta as delta
 from datetime import timedelta
 
-# visualization packages
+# Visualization packages
 import seaborn as sns
 import plotly.graph_objects as go
 import plotly
@@ -38,17 +38,14 @@ import kaleido # required for fig.write in azure
 import scipy.signal #used in dd_vis generation
 
 
-# for wiki_csv trigger
+# For wiki_csv trigger
 import wikipedia
 from nltk import tokenize #wiki sentences
 
 import nltk
 nltk.download('punkt')
 
-# for wordcloud trigger
-import stylecloud
 from stop_words import get_stop_words
-
 
 from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy import text as sqlalctext #edit st 2023-03-07
@@ -81,7 +78,7 @@ condition_list = []
 #creating an empty list for condition branching on dd_vis_trigger
 condition_list_dd_vis = []
 
-#########################################################################################
+####################################################################################################################
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
 def interactive_trigger():
 
@@ -227,13 +224,11 @@ def interactive_trigger():
         
     
     return 'interactive trigger works', 200
-#######################################################__________________________________
 
 
 
 
-
-#########################################################################################
+####################################################################################################################
 # mp3 trigger slash command which creates mp3 and posts to slack
 @app.route('/mp3_trigger', methods=['POST'])
 def mp3_trigger():
@@ -263,24 +258,20 @@ def mp3_trigger():
 
     # returning empty string with 200 response
     return f'{greeting_message}', 200
-#######################################################__________________________________
 
-
-#########################################################################################
-#deepl trigger slash command which creates translation for speech blocks 
-#and posts to slack
+####################################################################################################################
+# Deepl trigger slash command which creates translation for speech blocks and posts to slack
 @app.route('/deepl_trigger_with_lang', methods=['POST'])
 def deepl_trigger_with_lang():
     data = request.form
     channel_id = data.get('channel_id')
     #we are usging data2 to parse the information
     data2 = request.form.to_dict()
-    #print(data)
     user_id = data.get('user_id')
     channel_id = data.get('channel_id')
-    #getting language to translate to
+    # Getting language to translate to
     text_lang_to = data.get('text').split()[0]
-    #text to translate (we are taking portions after en-gb/en-us etc)
+    # Text to translate (we are taking portions after en-gb/en-us etc)
     if (text_lang_to.lower() == 'en-gb'):
         text_to_translate = data.get('text')[6:]
     elif (text_lang_to.lower() == 'en-us'):
@@ -293,8 +284,7 @@ def deepl_trigger_with_lang():
         text_to_translate = data.get('text')[3:]
 
     response_url = data.get("response_url")
-    #event = payload.get('event', {})
-    #text = event.get('text')
+
     greeting_message = "Processing your request. Please wait."
     ending_message = "Process executed successfully"
 
@@ -304,8 +294,7 @@ def deepl_trigger_with_lang():
                             )
 
 
-    #triggering backgroundworker for deepl with arguments lang to translate from
-    #translate to and text to translate
+    # Triggering backgroundworker for deepl with arguments lang to translate from translate to and text to translate
     thr = Thread(target=backgroundworker_deepl_text_lang, 
                  args=[client,
                        text_lang_to,
@@ -319,12 +308,9 @@ def deepl_trigger_with_lang():
 
     #returning empty string with 200 response
     return f'{greeting_message}', 200
-#######################################################__________________________________
 
-
-
-#########################################################################################
-#creating a slash command for gdelt api to create a csv
+####################################################################################################################
+# Creating a slash command for gdelt api to create a csv
 @app.route('/gdelt_csv_trigger', methods=['POST'])
 def gdelt_csv_trigger():
     data = request.form
@@ -348,8 +334,7 @@ def gdelt_csv_trigger():
                             )
     
     
-    #triggering backgroundworker for deepl with arguments lang to translate from
-    #translate to and text to translate
+    # Triggering backgroundworker for deepl with arguments lang to translate from translate to and text to translate
     thr = Thread(target=backgroundworker_gdelt_csv_trigger, 
                  args=[client,
                        gdelt_text,
@@ -361,9 +346,9 @@ def gdelt_csv_trigger():
     
     #returning empty string with 200 response
     return f'{greeting_message}', 200
-#######################################################__________________________________
 
 
+####################################################################################################################
 @app.route('/wiki_csv_trigger', methods=['POST'])
 def wiki_csv_trigger():
     data = request.form
@@ -405,10 +390,10 @@ def wiki_csv_trigger():
     
     #returning empty string with 200 response
     return f'{greeting_message}', 200
-#######################################################__________________________________
 
 
-#########################################################################################
+
+####################################################################################################################
 #wordcloud_shape_trigger slash command which creates and sends wordcloud images of user input 
 #and posts to slack
 @app.route('/wordcloud_shape_trigger', methods=['POST'])
@@ -434,44 +419,9 @@ def wordcloud_shape_trigger():
                             )
     
     return f'{greeting_message}', 200
-#######################################################__________________________________
 
 
-#########################################################################################
-# Define the function that handles the /hello command
-# Handle incoming slash command requests
-@app.route("/slack/command", methods=["POST"])
-def handle_slash_command():
-    # Parse the command and its parameters from the request
-    command = request.form.get("command")
-    text = request.form.get("text")
-    channel_id = request.form.get("channel_id")
-
-    # Execute the appropriate function based on the command
-    if command == "/example":
-        client.chat_postMessage(channel='#slack_bot_prod', text=f"it worksssss! max date: {df_raw.date.max()} & min date: {df_raw.date.min()} & blob df min date: {df_raw_10_21.date.min()}")
-
-    else:
-        response_text = "Unknown command: {}".format(command)
-
-
-    # Return an empty response to Slack
-    return make_response("", 200)
-#######################################################__________________________________
-
-#########################################################################################
-# Add a route for the /hello command
-@app.route("/hello", methods=["POST"])
-def handle_hello_request():
-    data = request.form
-    channel_id = data.get('channel_id')
-    # Execute the /hello command function
-    slack_app.client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="it works!", )
-    client.chat_postMessage(response_type= "in_channel", channel=channel_id, text=" 2nd it works!33!", )
-    return "Hello world1" , 200
-#######################################################__________________________________
-
-#########################################################################################
+####################################################################################################################
 # dd vis trigger slash command
 @app.route('/dd_vis_trigger', methods=['POST'])
 def dd_vis_trigger():
@@ -486,9 +436,24 @@ def dd_vis_trigger():
 
     #returning empty string with 200 response
     return 'dd_vis trigger works', 200
-#######################################################__________________________________
 
-#########################################################################################
+
+####################################################################################################################
+# Add a route for the /hello command
+@app.route("/hello", methods=["POST"])
+def handle_hello_request():
+    data = request.form
+    channel_id = data.get('channel_id')
+    # Execute the /hello command function
+    slack_app.client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="it works!", )
+    client.chat_postMessage(response_type= "in_channel", channel=channel_id, text=" 2nd it works!33!", )
+    return "Hello world1" , 200
+
+
+
+
+
+####################################################################################################################
 # Start the Slack app using the Flask app as a middleware
 handler = SlackRequestHandler(slack_app)
 @app.route("/slack/events", methods=["POST"])
