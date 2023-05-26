@@ -8,13 +8,21 @@ from slackeventsapi import SlackEventAdapter
 import requests
 import json
 
+from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
+
 import plotly.graph_objects as go
 def backgroundworker_zenserp_trends(client, text, response_url, channel_id):
 
-    # Define API KEY
-    headers = { 
-        "apikey": "ea6d7b00-fa4e-11ed-a261-ab10ed32af2f"}
+    # Define API KEY using os.environ
+    api_key = os.environ.get('ZENSERP_API_KEY')
 
+    if not api_key:
+        return 'API key not found.', 400
+
+    # Rest of your code using the api_key variable
+    headers = {
+        "apikey": api_key
+    }
     # Define parameters of query
     keys = ['o2','telekom','vodafone','congstar','1und1']
     category = 13
@@ -35,7 +43,7 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id):
     )
 
     # Get response object
-    response = requests.get('https://app.zenserp.com/api/v1/trends', headers=headers, params=params);
+    response = requests.get('https://app.zenserp.com/api/v1/trends', headers=headers, params=params)
 
     # Get dictionary object from response json
     dict_gt = response.json()
@@ -88,13 +96,40 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id):
                 width = 1920,
                 height = 1080
         )
-        fig.write_image(os.path.expanduser(f"zenserp_trends_plot/plot.png"))
+
+        fig.write_image("plot.png")
 
     plot(keys)
+    # Uploading the file to azure blob storage
+    # Creating variable to use in blob_service_client
+    container_string=os.environ["CONNECTION_STRING"]
+    storage_account_name = "storage4slack"
+    # Creating variable to use in container_client
+    container_name = "visfunc"
+    blob_service_client = BlobServiceClient.from_connection_string (container_string) 
+    container_client = blob_service_client.get_container_client(container_name)
+    filename = "plot.png"
+    blob_client = container_client.get_blob_client(filename)
+    blob_name= filename
+    # upload the file
+    with open(filename, "rb") as data:
+        blob_client.upload_blob(data)
+                            
+        # fig.write_image(os.path.expanduser(f"zenserp_trends_plot/plot.png"))
+
+    
 
     #uploading the file to slack using bolt syntax for py
     try:
-        filename=f"zenserp_trends_plot/plot.png"
+        # Download the blob as binary data
+        blob_client = blob_service_client.get_blob_client(container_name, blob_name)
+        blob_data = blob_client.download_blob().readall()
+        
+        # Open the audio file and read its contents
+        with open(filename, 'rb') as file:
+            file_data = file.read()
+        
+        # filename=f"zenserp_trends_plot/plot.png"
         response = client.files_upload(channels= channel_id,
                                         file=filename,
                                         initial_comment=f"Plot generated for trends: ")
