@@ -11,7 +11,7 @@ import json
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 
 import plotly.graph_objects as go
-def backgroundworker_zenserp_trends(client, text, response_url, channel_id):
+def backgroundworker_zenserp_trends(client, text, response_url, channel_id, payload):
 
     # Define API KEY using os.environ
     api_key = os.environ.get('ZENSERP_API_KEY')
@@ -24,7 +24,12 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id):
         "apikey": api_key
     }
     # Define parameters of query
-    keys = ['o2','telekom','vodafone','congstar','1und1']
+    # keys = ['o2','telekom','vodafone','congstar','1und1']
+    
+    # Process the payload
+    selected_options = payload['actions'][0]['selected_options']
+    keys = [option['text']['text'] for option in selected_options]
+
     category = 13
     country = 'DE'
     tf = "today 5-y"
@@ -140,7 +145,7 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id):
         assert e.response["error"]  # str like 'invalid_auth', 'channel_not_found'
         print(f"Got an error: {e.response['error']}")    
     
-    requests.post(response_url,data=json.dumps(payload))
+    # requests.post(response_url,data=json.dumps(payload))
 
     # your task
     client.chat_postMessage(channel= channel_id,
