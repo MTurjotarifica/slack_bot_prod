@@ -11,7 +11,7 @@ import json
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 
 import plotly.graph_objects as go
-def backgroundworker_zenserp_trends(client, text, response_url, channel_id, payload):
+def backgroundworker_zenserp_trends(client, text, response_url, channel_id, keys):
 
     # Define API KEY using os.environ
     api_key = os.environ.get('ZENSERP_API_KEY')
@@ -26,21 +26,21 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id, payl
     # Define parameters of query
     # keys = ['o2','telekom','vodafone','congstar','1und1']
 
-    try: 
-        # Process the payload
-        print("This is the payload try option")
-        print(payload)
-        selected_options = payload['actions'][0]['selected_options']
-        print("This is the selected options")
-        print(selected_options)
-        keys = [option['text']['text'] for option in selected_options]
-    except KeyError:
-        # Process the payload
-        print("This is the payload except")
-        selected_options = payload['actions'][0]['selected_option']
-        print("This is the selected options")
-        print(selected_options)
-        keys = [selected_options['text']['text']]
+    # try: 
+    #     # Process the payload
+    #     print("This is the payload try option")
+    #     print(payload)
+    #     selected_options = payload['actions'][0]['selected_options']
+    #     print("This is the selected options")
+    #     print(selected_options)
+    #     keys = [option['text']['text'] for option in selected_options]
+    # except KeyError:
+    #     # Process the payload
+    #     print("This is the payload except")
+    #     selected_options = payload['actions'][0]['selected_option']
+    #     print("This is the selected options")
+    #     print(selected_options)
+    #     keys = [selected_options['text']['text']]
 
     category = 13
     country = 'DE'
