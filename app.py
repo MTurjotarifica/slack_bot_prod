@@ -240,13 +240,18 @@ def zenserp_trends():
     text = data.get('text')
     response_url = data.get("response_url")
 
+    client.chat_postMessage(channel=channel_id, 
+                                    text="Trend:  ",
+                                    blocks = trend_block
+                                    )
 
 
     thr = Thread(target=backgroundworker_zenserp_trends, 
                  args=[client,
                        text,
                        response_url,
-                       channel_id]
+                       channel_id,
+                       data2]
                  )
 
     thr.start()
