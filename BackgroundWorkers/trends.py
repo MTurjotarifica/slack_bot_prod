@@ -34,13 +34,13 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id, payl
         print("This is the selected options")
         print(selected_options)
         keys = [option['text']['text'] for option in selected_options]
-    except:
+    except KeyError:
         # Process the payload
         print("This is the payload except")
-        selected_options = json.loads(payload['payload'])['actions'][0]['selected_options']
+        selected_options = payload['actions'][0]['selected_option']
         print("This is the selected options")
         print(selected_options)
-        keys = [option['text']['text'] for option in selected_options]
+        keys = [selected_options['text']['text']]
 
     category = 13
     country = 'DE'
