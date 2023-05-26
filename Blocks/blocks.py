@@ -981,7 +981,7 @@ trend_block= [
 							"text": "congstar",
 							"emoji": True
 						},
-						"value": "value-2"
+						"value": "value-3"
 					},
 					{
 						"text": {
@@ -989,7 +989,7 @@ trend_block= [
 							"text": "1und1",
 							"emoji": True
 						},
-						"value": "value-2"
+						"value": "value-4"
 					}
 				],
 				"action_id": "trend-select"
