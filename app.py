@@ -96,13 +96,13 @@ def interactive_trigger():
     if action_id == "trend-select":
         payload = json.loads(data2['payload'])
         kw_value=payload['actions'][0]['selected_option']['value']
-        
+        print("kw values are ", kw_value)
         thr = Thread(target=backgroundworker_zenserp_trends, 
                  args=[client,
                        text,
                        response_url,
                        channel_id,
-                       payload]
+                       kw_value]
                  )
 
         thr.start()
