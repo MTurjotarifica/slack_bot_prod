@@ -10,3 +10,4 @@ from BackgroundWorkers.ddviz import *
 from BackgroundWorkers.gdelt import *
 from BackgroundWorkers.mp3 import *
 from BackgroundWorkers.deepl import *
+from BackgroundWorkers.trends import *
