@@ -25,10 +25,22 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id, payl
     }
     # Define parameters of query
     # keys = ['o2','telekom','vodafone','congstar','1und1']
-    
-    # Process the payload
-    selected_options = payload['actions'][0]['selected_options']
-    keys = [option['text']['text'] for option in selected_options]
+
+    try: 
+        # Process the payload
+        print("This is the payload try option")
+        print(payload)
+        selected_options = payload['actions'][0]['selected_options']
+        print("This is the selected options")
+        print(selected_options)
+        keys = [option['text']['text'] for option in selected_options]
+    except:
+        # Process the payload
+        print("This is the payload except")
+        selected_options = json.loads(payload['payload'])['actions'][0]['selected_options']
+        print("This is the selected options")
+        print(selected_options)
+        keys = [option['text']['text'] for option in selected_options]
 
     category = 13
     country = 'DE'
@@ -139,6 +151,11 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id, payl
                                         file=filename,
                                         initial_comment=f"Plot generated for trends: ")
         assert response["file"]  # the uploaded file
+
+        # Delete the blob
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+        blob_client.delete_blob()
+        
     except SlackApiError as e:
         # You will get a SlackApiError if "ok" is False
         assert e.response["ok"] is False
