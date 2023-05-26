@@ -957,7 +957,7 @@ trend_block= [
 							"text": "o2",
 							"emoji": True
 						},
-						"value": "value-0"
+						"value": "o2"
 					},
 					{
 						"text": {
@@ -965,7 +965,7 @@ trend_block= [
 							"text": "telekom",
 							"emoji": True
 						},
-						"value": "value-1"
+						"value": "telekom"
 					},
 					{
 						"text": {
@@ -973,7 +973,7 @@ trend_block= [
 							"text": "vodafone",
 							"emoji": True
 						},
-						"value": "value-2"
+						"value": "vodafone"
 					},
 					{
 						"text": {
@@ -981,7 +981,7 @@ trend_block= [
 							"text": "congstar",
 							"emoji": True
 						},
-						"value": "value-3"
+						"value": "congstar"
 					},
 					{
 						"text": {
@@ -989,7 +989,7 @@ trend_block= [
 							"text": "1und1",
 							"emoji": True
 						},
-						"value": "value-4"
+						"value": "1und1"
 					}
 				],
 				"action_id": "trend-select"
