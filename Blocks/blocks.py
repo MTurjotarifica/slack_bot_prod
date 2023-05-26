@@ -948,14 +948,14 @@ trend_block= [
 				"placeholder": {
 					"type": "plain_text",
 					"text": "Select options",
-					"emoji": true
+					"emoji": True
 				},
 				"options": [
 					{
 						"text": {
 							"type": "plain_text",
 							"text": "o2",
-							"emoji": true
+							"emoji": True
 						},
 						"value": "value-0"
 					},
@@ -963,7 +963,7 @@ trend_block= [
 						"text": {
 							"type": "plain_text",
 							"text": "telekom",
-							"emoji": true
+							"emoji": True
 						},
 						"value": "value-1"
 					},
@@ -971,7 +971,7 @@ trend_block= [
 						"text": {
 							"type": "plain_text",
 							"text": "vodafone",
-							"emoji": true
+							"emoji": True
 						},
 						"value": "value-2"
 					},
@@ -979,7 +979,7 @@ trend_block= [
 						"text": {
 							"type": "plain_text",
 							"text": "congstar",
-							"emoji": true
+							"emoji": True
 						},
 						"value": "value-2"
 					},
@@ -987,7 +987,7 @@ trend_block= [
 						"text": {
 							"type": "plain_text",
 							"text": "1und1",
-							"emoji": true
+							"emoji": True
 						},
 						"value": "value-2"
 					}
