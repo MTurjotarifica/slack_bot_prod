@@ -95,17 +95,22 @@ def interactive_trigger():
 
     if action_id == "trend-select":
         payload = json.loads(data2['payload'])
-        kw_value=payload['actions'][0]['selected_option']['value']
-        print("kw values are ", kw_value)
-        thr = Thread(target=backgroundworker_zenserp_trends, 
-                 args=[client,
-                       text,
-                       response_url,
-                       channel_id,
-                       kw_value]
-                 )
+        # kw_value=payload['actions'][0]['selected_option']['value']
+        print("kw values are ", payload)
 
-        thr.start()
+        client.chat_postMessage(channel=channel_id,
+                                text=str(payload),                 
+                                )
+        
+        # thr = Thread(target=backgroundworker_zenserp_trends, 
+        #          args=[client,
+        #                text,
+        #                response_url,
+        #                channel_id,
+        #                kw_value]
+        #          )
+
+        # thr.start()
 
     elif action_id == "wordcloud_kw_inp_act":
         payload = json.loads(data2['payload'])
