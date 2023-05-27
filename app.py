@@ -95,17 +95,17 @@ def interactive_trigger():
 
     if action_id == "trend-select":
         payload = json.loads(data2['payload'])
-	selected_options = payload['actions'][0]['selected_options']
-	selected_values = [option['value'] for option in selected_options]
+        selected_options = payload['actions'][0]['selected_options']
+        selected_values = [option['value'] for option in selected_options]
 
-	print(selected_values)
+        print(selected_values)
         # kw_value=payload['actions'][0]['selected_option']['value']
         print("kw values are ", payload)
 
         client.chat_postMessage(channel=channel_id,
-                                text=str(selected_values),                 
-                                )
-        
+                            text=str(selected_values),                 
+                            )
+    
         # thr = Thread(target=backgroundworker_zenserp_trends, 
         #          args=[client,
         #                text,
