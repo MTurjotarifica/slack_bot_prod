@@ -114,7 +114,7 @@ def interactive_trigger():
                        selected_values]
                  )
 
-        # thr.start()
+        thr.start()
 
     elif action_id == "wordcloud_kw_inp_act":
         payload = json.loads(data2['payload'])
