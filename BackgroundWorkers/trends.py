@@ -31,18 +31,15 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id, keys
     country = 'DE'
     tf = "today 5-y"
 
-    # Add parameters to query
-    params = (
-        ("keyword[]", keys[0]),
-        ("keyword[]", keys[1]),
-        ("keyword[]", keys[2]),
-        ("keyword[]", keys[3]),
-        ("keyword[]", keys[4]),
-        ("cat",str(category)),
-        ("hl","de"),
-        ("geo",country),
-        ("timeframe",tf),
-    )
+    # Define parameters of the query
+    params = [("keyword[]", key) for key in keys]
+    params.extend([
+        ("cat", str(category)),
+        ("hl", "de"),
+        ("geo", country),
+        ("timeframe", tf),
+    ])
+
 
     # Get response object
     response = requests.get('https://app.zenserp.com/api/v1/trends', headers=headers, params=params)
@@ -67,8 +64,10 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id, keys
     # Drop original date_raw column
     df = df.drop(['date_raw'], axis=1)
 
-    # Define colors of lines
-    cols = ['#9C0046','#0050B7','#789098','#00EF99','#FF6F00']
+    # Define colors of lines based on the number of keys
+    num_keys = len(keys)
+    colors = ['#9C0046', '#0050B7', '#789098', '#00EF99', '#FF6F00']
+    cols = colors[:num_keys]
 
     # Plot the columns of the dataframe
     def plot(keys):
