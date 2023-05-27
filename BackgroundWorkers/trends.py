@@ -11,7 +11,7 @@ import json
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 
 import plotly.graph_objects as go
-def backgroundworker_zenserp_trends(client, text, response_url, channel_id, keys):
+def backgroundworker_zenserp_trends(client, text, response_url, channel_id, keyss):
 
     # Define API KEY using os.environ
     api_key = os.environ.get('ZENSERP_API_KEY')
@@ -24,7 +24,7 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id, keys
         "apikey": api_key
     }
     # Define parameters of query
-    # keys = ['o2','telekom','vodafone','congstar','1und1']
+    keys = ['o2','telekom','vodafone','congstar','1und1']
 
 
     category = 13
