@@ -140,9 +140,9 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id, keys
                                         initial_comment=f"Plot generated for trends: ")
         assert response["file"]  # the uploaded file
 
-        # # Delete the blob
-        # blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
-        # blob_client.delete_blob()
+        # Delete the blob
+        blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
+        blob_client.delete_blob()
         
     except SlackApiError as e:
         # You will get a SlackApiError if "ok" is False
@@ -152,10 +152,10 @@ def backgroundworker_zenserp_trends(client, text, response_url, channel_id, keys
     
     # requests.post(response_url,data=json.dumps(payload))
 
-    # your task
-    client.chat_postMessage(channel= channel_id,
-                            text=f"{text}   {response_url}"
-                            )
+    # # your task
+    # client.chat_postMessage(channel= channel_id,
+    #                         text=f"{text}   {response_url}"
+    #                         )
     
     #payload is required to to send second message after task is completed
     payload = {"text":"your task is complete",
