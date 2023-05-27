@@ -481,8 +481,6 @@ def dd_vis_trigger():
     #returning empty string with 200 response
     return 'dd_vis trigger works', 200
 
-
-
 ####################################################################################################################
 # Add a route for the /hello command
 @app.route("/hello", methods=["POST"])
@@ -493,9 +491,6 @@ def handle_hello_request():
     slack_app.client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="it works!", )
     client.chat_postMessage(response_type= "in_channel", channel=channel_id, text=" 2nd it works!33!", )
     return "Hello world1" , 200
-
-
-
 
 
 ####################################################################################################################
