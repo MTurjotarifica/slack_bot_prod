@@ -1,9 +1,9 @@
+#mp3 command added 
 import os
 from slack_bolt import App
 from slack_bolt.adapter.flask import SlackRequestHandler
 from flask import Flask, request, make_response
-# From flask_sqlalchemy import SQLAlchemy
-
+#from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from threading import Thread
 import azure.cognitiveservices.speech as speechsdk
@@ -25,7 +25,7 @@ from datetime import datetime as dt
 from datetime import timedelta as delta
 from datetime import timedelta
 
-# Visualization packages
+# visualization packages
 import seaborn as sns
 import plotly.graph_objects as go
 import plotly
@@ -38,7 +38,7 @@ import kaleido # required for fig.write in azure
 import scipy.signal #used in dd_vis generation
 
 
-# For wiki_csv trigger
+# for wiki_csv trigger
 import wikipedia
 from nltk import tokenize #wiki sentences
 
@@ -47,11 +47,13 @@ nltk.download('punkt')
 
 from stop_words import get_stop_words
 
+
 from sqlalchemy import create_engine, Table, MetaData
 from sqlalchemy import text as sqlalctext #edit st 2023-03-07
 
 # Functions to import 
 from Imports.importFunction import *
+
 
 load_dotenv()
 
@@ -62,7 +64,6 @@ slack_app = App(
     token=os.environ["SLACK_BOT_TOKEN"],
     signing_secret=os.environ["SLACK_SIGNING_SECRET"]
 )
-
 client = slack_app.client
 
 
@@ -72,428 +73,72 @@ df_raw = load_dd_df()
 df_raw['date'] = pd.to_datetime(df_raw['date'])
 
 
-#creating an empty list for condition branching on wordcloud
-condition_list = []
-
-#creating an empty list for condition branching on dd_vis_trigger
-condition_list_dd_vis = []
-
-####################################################################################################################
+#########################################################################################
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
-def interactive_trigger():
-
-    data = request.form
-    data2 = request.form.to_dict()
-    user_id = data.get('user_id')
-    channel_id = json.loads(data2['payload'])['container']['channel_id']
-    text = data.get('text')
-
-    response_url = json.loads(data2['payload'])['response_url']
-    actions = data.get("actions")
-    actions_value = data.get("actions.value")
-    action_id = json.loads(data2['payload'])['actions'][0]['action_id']
-
-    if action_id == "trend-select":
-        payload = json.loads(data2['payload'])
-        selected_options = payload['actions'][0]['selected_options']
-        selected_values = [option['value'] for option in selected_options]
-
-        # print(selected_values)
-        # # kw_value=payload['actions'][0]['selected_option']['value']
-        # print("kw values are ", payload)
-
-        # client.chat_postMessage(channel=channel_id,
-        #                     text=str(selected_values),                 
-        #                     )
+def interactive_trigger_route():
+    return interactive_trigger_route(client,
+                                     df_raw, 
+                                     backgroundworker_wordcloud_shape, 
+                                     backgroundworker3_ddviz, 
+                                     backgroundworker_zenserp_trends,
+                                     wordcloud_lang_block, wordcloud_shape_block2, 
+                                     wordcloud_color_block, 
+                                     dd_vis_blocks_startdate, 
+                                     dd_vis_blocks_indexdate, 
+                                     dd_vis_blocks_outputtype,)
     
-        thr = Thread(target=backgroundworker_zenserp_trends, 
-                 args=[client,
-                       text,
-                       response_url,
-                       channel_id,
-                       selected_values]
-                 )
-
-        thr.start()
-
-    elif action_id == "wordcloud_kw_inp_act":
-        payload = json.loads(data2['payload'])
-        #obtain the value inserted in the text prompt
-        kw_value=payload['actions'][0]['value']
-        
-        # appending arguments to the list that we created for wordcloud
-        condition_list.append(kw_value)
-        
-        
-        
-        #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
-                                text=f"{kw_value}    {response_url}",
-                                blocks=wordcloud_lang_block
-                                )
-        
-    elif action_id == "wordcloud_kw_lang_act":
-        payload = json.loads(data2['payload'])
-        kw_value=payload['actions'][0]['selected_option']['value']
-        condition_list.append(kw_value)
-        
-        
-        #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
-                                text=f"{kw_value}     {response_url}",
-                                blocks=wordcloud_shape_block2
-                                )
-        
-    elif action_id == "wordcloud_shape_act":
-        payload = json.loads(data2['payload'])
-        #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['selected_option']['value']
-        condition_list.append(kw_value)
-        
-        
-        
-        #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
-                                text=f"{kw_value}     {response_url}",
-                                blocks=wordcloud_color_block
-                                )
-        
-    elif action_id == "wordcloud_color_act":
-        payload = json.loads(data2['payload'])
-        #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['selected_option']['value']
-        condition_list.append(kw_value)
-    #def backgroundworker_wordcloud_shape(wordcloud_lang_to, 
-                                            #wordcloud_lang_kw, 
-                                            #wordcloud_shape_kw, 
-                                            #response_url):
-                                                
-        thr = Thread(target=backgroundworker_wordcloud_shape, args=[client,
-                                                                    condition_list[-3], 
-                                                                    condition_list[-4], 
-                                                                    condition_list[-2],
-                                                                    condition_list[-1],
-                                                                    response_url,
-                                                                    channel_id])
-        thr.start()
-
-    elif action_id == "dd_vis_trigger_act":
-        payload = json.loads(data2['payload'])
-        #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['value']
-        condition_list_dd_vis.append(kw_value)
-
-            
-        #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
-                                text= f"{channel_id} language selection dropdown",
-                                blocks=dd_vis_blocks_startdate )
-        
-    elif action_id == "dd_vis_blocks_startdate_act":
-        payload = json.loads(data2['payload'])
-        #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['selected_date']
-        
-        condition_list_dd_vis.append(kw_value)
-        
-        
-        #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
-                                text=f"{kw_value}     {response_url}",
-                                blocks=dd_vis_blocks_indexdate
-                                )
-    
-    elif action_id == "dd_vis_blocks_indexdate_act":
-        payload = json.loads(data2['payload'])
-        #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['selected_date']
-        condition_list_dd_vis.append(kw_value)
-        
-
-        
-        #sending kw_value and language selection dropdown
-        client.chat_postMessage(channel=channel_id,
-                                text=f"{kw_value}     {response_url}",
-                                blocks=dd_vis_blocks_outputtype
-                                )
-    elif action_id == "dd_vis_blocks_image_export_action":
-        payload = json.loads(data2['payload'])
-        kw_value=payload['actions'][0]['selected_option']['value']
-        condition_list_dd_vis.append(kw_value)
-
-        # condition_list_dd_vis[-4] is keyword
-        # condition_list_dd_vis[-3] is start date
-        # condition_list_dd_vis[-2] is index date
-        # condition_list_dd_vis[-1] is output format
-        
-        thr = Thread(target=backgroundworker3_ddviz, args=[client,
-                                                            df_raw,
-                                                            condition_list_dd_vis[-4],
-                                                            condition_list_dd_vis[-3],
-                                                            condition_list_dd_vis[-2], 
-                                                            condition_list_dd_vis[-1],
-                                                            response_url,
-                                                            channel_id])
-        thr.start()
-        
-        client.chat_postMessage(channel=channel_id, text="A backgroundworker is running your task. Please wait.")
-	
-
-        #client.chat_postMessage(channel=channel_id, text=f"dd_vis_blocks_indexdate_act working kw: {condition_list_dd_vis[-3]} & startd: {condition_list_dd_vis[-2]} & indexd: {condition_list_dd_vis[-1]} & responseurl: {response_url} & chID:{channel_id}")
-        
-    else:
-        client.chat_postMessage(channel=channel_id, text="Error: Please try again with different values.")
-        #pass
-        
-    
-    return 'interactive trigger works', 200
 
 
-
-###################################################################################################################
-
+#########################################################################################
 @app.route('/trends', methods=['POST'])
-def zenserp_trends():
-    data = request.form
-    #we are usging data2 to parse the information
-    data2 = request.form.to_dict()
-    #print(data)
-    user_id = data.get('user_id')
-    channel_id = data.get('channel_id')
-    text = data.get('text')
-    response_url = data.get("response_url")
-
-    client.chat_postMessage(channel=channel_id, 
-                                    text="Trend:  ",
-                                    blocks = trend_block
-                                    )
+def trend_route():
+    return zenserp_trends(client, trend_block)
 
 
-
-    return 'Thank you for your request', 200
-
-####################################################################################################################
 # mp3 trigger slash command which creates mp3 and posts to slack
 @app.route('/mp3_trigger', methods=['POST'])
-def mp3_trigger():
-    data = request.form
-    #we are usging data2 to parse the information
-    data2 = request.form.to_dict()
-    #print(data)
-    user_id = data.get('user_id')
-    channel_id = data.get('channel_id')
-    text = data.get('text')
-    response_url = data.get("response_url")
-    #event = payload.get('event', {})
-    #text = event.get('text')
-    greeting_message = "Processing your request. Please wait."
-    ending_message = "Process executed successfully"
+def mp3_route():
+    return mp3_trigger(client, backgroundworker_mp3)
 
 
-    client.chat_postMessage(channel=channel_id,
-                            text="MP3 loading. Please wait."
-                            )
-
-
-    # triggering backgroundworker1 
-    thr = Thread(target=backgroundworker_mp3, args=[client, text, response_url, channel_id])
-    thr.start()
-
-
-    # returning empty string with 200 response
-    return f'{greeting_message}', 200
-
-####################################################################################################################
-# Deepl trigger slash command which creates translation for speech blocks and posts to slack
+#deepl trigger slash command which creates translation for speech blocks and posts to slack
 @app.route('/deepl_trigger_with_lang', methods=['POST'])
-def deepl_trigger_with_lang():
-    data = request.form
-    channel_id = data.get('channel_id')
-    #we are usging data2 to parse the information
-    data2 = request.form.to_dict()
-    user_id = data.get('user_id')
-    channel_id = data.get('channel_id')
-    # Getting language to translate to
-    text_lang_to = data.get('text').split()[0]
-    # Text to translate (we are taking portions after en-gb/en-us etc)
-    if (text_lang_to.lower() == 'en-gb'):
-        text_to_translate = data.get('text')[6:]
-    elif (text_lang_to.lower() == 'en-us'):
-        text_to_translate = data.get('text')[6:]
-    elif (text_lang_to.lower() == 'pt-pt'):
-        text_to_translate = data.get('text')[6:]
-    elif (text_lang_to.lower() == 'pt-br'):
-        text_to_translate = data.get('text')[6:]
-    else:
-        text_to_translate = data.get('text')[3:]
-
-    response_url = data.get("response_url")
-
-    greeting_message = "Processing your request. Please wait."
-    ending_message = "Process executed successfully"
+def deepl_route():
+    return deepl_trigger_with_lang(client, backgroundworker_deepl_text_lang)
 
 
-    client.chat_postMessage(channel=channel_id,
-                            text="DeepL Translation loading. Please wait."
-                            )
-
-
-    # Triggering backgroundworker for deepl with arguments lang to translate from translate to and text to translate
-    thr = Thread(target=backgroundworker_deepl_text_lang, 
-                 args=[client,
-                       text_lang_to,
-                       text_to_translate,
-                       response_url,
-                       channel_id
-                      ]
-                 )
-
-    thr.start()
-
-    #returning empty string with 200 response
-    return f'{greeting_message}', 200
-
-####################################################################################################################
-# Creating a slash command for gdelt api to create a csv
+#creating a slash command for gdelt api to create a csv
 @app.route('/gdelt_csv_trigger', methods=['POST'])
-def gdelt_csv_trigger():
-    data = request.form
-    # we are not usging data2 to parse the information in this case
-    data2 = request.form.to_dict()
-    #print(data)
-    user_id = data.get('user_id')
-    channel_id = data.get('channel_id')
-    #getting keyword from user input and storing them into gdelt_text variable
-    gdelt_text = data.get('text')
-    
-    response_url = data.get("response_url")
-    #event = payload.get('event', {})
-    #text = event.get('text')
-    greeting_message = "Processing your request. Please wait."
-    ending_message = "Process executed successfully"
-
-    
-    client.chat_postMessage(channel=channel_id,
-                            text="CSV loading. Please wait."
-                            )
-    
-    
-    # Triggering backgroundworker for deepl with arguments lang to translate from translate to and text to translate
-    thr = Thread(target=backgroundworker_gdelt_csv_trigger, 
-                 args=[client,
-                       gdelt_text,
-                       response_url,
-                       channel_id]
-                 )
-    
-    thr.start()
-    
-    #returning empty string with 200 response
-    return f'{greeting_message}', 200
+def gedlt_route():
+    return gdelt_csv_trigger(client, backgroundworker_gdelt_csv_trigger)
 
 
-####################################################################################################################
 @app.route('/wiki_csv_trigger', methods=['POST'])
-def wiki_csv_trigger():
-    data = request.form
-    #we are usging data2 to parse the information
-    data2 = request.form.to_dict()
-    #print(data)
-    user_id = data.get('user_id')
-    channel_id = data.get('channel_id')
-    #getting language to for wiki csv trigger
-    wordcloud_lang_to = data.get('text').split()[0].lower()
-    # obtaining the keyword anything after the 3rd letter
-    # because example: en "keyword"
-    wordcloud_lang_kw = data.get('text')[3:]
-    
-    response_url = data.get("response_url")
-    #event = payload.get('event', {})
-    #text = event.get('text')
-    greeting_message = "Processing your request. Please wait."
-    ending_message = "Process executed successfully"
-
-    
-    client.chat_postMessage(channel=channel_id, # updated to channel_id edit: mar 15, 2023
-                            text="CSV loading. Please wait."
-                            )
-    
-    
-    #triggering backgroundworker for deepl with arguments lang to translate from
-    #translate to and text to translate
-    thr = Thread(target=backgroundworker_wiki_csv_trigger, 
-                 args=[client,
-                       wordcloud_lang_to,
-                       wordcloud_lang_kw,
-                       response_url,
-                       channel_id,
-                       ]
-                 )
-    
-    thr.start()
-    
-    #returning empty string with 200 response
-    return f'{greeting_message}', 200
+def wiki_route():
+    return wiki_csv_trigger(client, backgroundworker_wiki_csv_trigger)
 
 
-
-####################################################################################################################
-#wordcloud_shape_trigger slash command which creates and sends wordcloud images of user input 
-#and posts to slack
+#wordcloud_shape_trigger slash command which creates and sends wordcloud images of user input and posts to slack
 @app.route('/wordcloud_shape_trigger', methods=['POST'])
-def wordcloud_shape_trigger():
-    #condition_list reset
-    condition_list=[]
-    
-    data = request.form
-    #we are usging data2 to parse the information
-    data2 = request.form.to_dict()
-    user_id = data.get('user_id')
-    channel_id = data.get('channel_id')
-    response_url = data.get("response_url")
-    greeting_message = "Processing your request. Please wait."
-    ending_message = "Process executed successfully"
-    
-    
-    
-    
-    client.chat_postMessage(channel=channel_id,
-                            text=f"Please provide the keyword for wordcloud",
-                            blocks=word_cloud_kw_block
-                            )
-    
-    return f'{greeting_message}', 200
+def wordcloud_route():
+    return wordcloud_shape_trigger(client, word_cloud_kw_block)
 
 
-####################################################################################################################
 # dd vis trigger slash command
 @app.route('/dd_vis_trigger', methods=['POST'])
-def dd_vis_trigger():
-    data = request.form
-    channel_id = data.get('channel_id')
-
-    client.chat_postMessage(channel=channel_id, 
-                                        text="Visualization:  ",
-                                        blocks = dd_vis_trigger_block
-                                        )
+def ddviz_route():
+    return dd_vis_trigger(client, dd_vis_trigger_block)
 
 
-    #returning empty string with 200 response
-    return 'dd_vis trigger works', 200
 
-####################################################################################################################
+#########################################################################################
 # Add a route for the /hello command
 @app.route("/hello", methods=["POST"])
-def handle_hello_request():
-    data = request.form
-    channel_id = data.get('channel_id')
-    # Execute the /hello command function
-    slack_app.client.chat_postMessage(response_type= "in_channel", channel=channel_id, text="it works!", )
-    client.chat_postMessage(response_type= "in_channel", channel=channel_id, text=" 2nd it works!33!", )
-    return "Hello world1" , 200
+def hello_slackbotprod():
+    return handle_hello_request(client)
 
 
-####################################################################################################################
+#########################################################################################
 # Start the Slack app using the Flask app as a middleware
 handler = SlackRequestHandler(slack_app)
 @app.route("/slack/events", methods=["POST"])
