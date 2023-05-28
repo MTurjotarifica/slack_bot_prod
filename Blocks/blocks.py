@@ -932,7 +932,6 @@ missing_kw_block = [
 		}
 	]
 
-# Trends 
 trend_block= [
 		{
 			"type": "divider"
