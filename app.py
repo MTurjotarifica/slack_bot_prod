@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from threading import Thread
 import azure.cognitiveservices.speech as speechsdk
 
+
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
