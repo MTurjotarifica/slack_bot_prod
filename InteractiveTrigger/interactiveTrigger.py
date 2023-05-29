@@ -11,11 +11,11 @@ from slackeventsapi import SlackEventAdapter
 
 def interactive_trigger_route(client, df_raw, backgroundworker_wordcloud_shape, backgroundworker3_ddviz, backgroundworker_zenserp_trends,wordcloud_lang_block, wordcloud_shape_block2, wordcloud_color_block, dd_vis_blocks_startdate, dd_vis_blocks_indexdate, dd_vis_blocks_outputtype):
     
-    # #creating an empty list for condition branching on wordcloud
-    # condition_list = []
+    #creating an empty list for condition branching on wordcloud
+    condition_list = []
 
-    # #creating an empty list for condition branching on dd_vis_trigger
-    # condition_list_dd_vis = []
+    #creating an empty list for condition branching on dd_vis_trigger
+    condition_list_dd_vis = []
 
     data = request.form
     data2 = request.form.to_dict()
@@ -38,11 +38,6 @@ def interactive_trigger_route(client, df_raw, backgroundworker_wordcloud_shape, 
         thr.start()
 
     elif action_id == "wordcloud_kw_inp_act":
-        #creating an empty list for condition branching on wordcloud
-        condition_list = []
-
-        #creating an empty list for condition branching on dd_vis_trigger
-        condition_list_dd_vis = []
 
         payload = json.loads(data2['payload'])
         #obtain the value inserted in the text prompt
@@ -105,11 +100,6 @@ def interactive_trigger_route(client, df_raw, backgroundworker_wordcloud_shape, 
         thr.start()
 
     elif action_id == "dd_vis_trigger_act":
-        #creating an empty list for condition branching on wordcloud
-        condition_list = []
-
-        #creating an empty list for condition branching on dd_vis_trigger
-        condition_list_dd_vis = []
         payload = json.loads(data2['payload'])
         #obtaining kw_value and appending value to list
         kw_value=payload['actions'][0]['value']
