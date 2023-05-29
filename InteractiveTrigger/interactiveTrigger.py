@@ -85,11 +85,13 @@ def interactive_trigger_route(client, df_raw, backgroundworker_wordcloud_shape, 
         #obtaining kw_value and appending value to list
         kw_value=payload['actions'][0]['selected_option']['value']
         condition_list.append(kw_value)
-    #def backgroundworker_wordcloud_shape(wordcloud_lang_to, 
+        #def backgroundworker_wordcloud_shape(wordcloud_lang_to, 
                                             #wordcloud_lang_kw, 
                                             #wordcloud_shape_kw, 
                                             #response_url):
-                                                
+        print(condition_list)
+        client.chat_postMessage(channel=channel_id,
+                                text= str(condition_list))
         thr = Thread(target=backgroundworker_wordcloud_shape, args=[client,
                                                                     condition_list[-3], 
                                                                     condition_list[-4], 
@@ -142,6 +144,10 @@ def interactive_trigger_route(client, df_raw, backgroundworker_wordcloud_shape, 
         payload = json.loads(data2['payload'])
         kw_value=payload['actions'][0]['selected_option']['value']
         condition_list_dd_vis.append(kw_value)
+        
+        print(condition_list)
+        client.chat_postMessage(channel=channel_id,
+                                text= str(condition_list))
 
         # condition_list_dd_vis[-4] is keyword
         # condition_list_dd_vis[-3] is start date
