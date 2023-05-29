@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 from threading import Thread
 import azure.cognitiveservices.speech as speechsdk
 
-
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -39,7 +38,7 @@ import kaleido # required for fig.write in azure
 import scipy.signal #used in dd_vis generation
 
 
-# for wiki_csv trigger
+# For wiki_csv trigger
 import wikipedia
 from nltk import tokenize #wiki sentences
 
@@ -70,15 +69,22 @@ client = slack_app.client
 
 df_raw = load_dd_df()
 
-# converting date to datetime object
+# Converting date to datetime object
 df_raw['date'] = pd.to_datetime(df_raw['date'])
 
+#creating an empty list for condition branching on wordcloud
+condition_list = []
+
+#creating an empty list for condition branching on dd_vis_trigger
+condition_list_dd_vis = []
 
 #########################################################################################
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
 def interactive_trigger():
     return interactive_trigger_route(client,
-                                     df_raw, 
+                                     df_raw,
+                                     condition_list,
+                                     condition_list_dd_vis,
                                      backgroundworker_wordcloud_shape, 
                                      backgroundworker3_ddviz, 
                                      backgroundworker_zenserp_trends,
