@@ -74,14 +74,15 @@ df_raw = load_dd_df()
 # Converting date to datetime object
 df_raw['date'] = pd.to_datetime(df_raw['date'])
 
-
+# Define the condition_list variable here
+condition_list = []
+condition_list_dd_vis = []
 
 #########################################################################################
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
 def interactive_trigger():
-    condition_list = []  # Define the condition_list variable here
-    condition_list_dd_vis = []
-    
+    global condition_list, condition_list_dd_vis
+
     return interactive_trigger_route(client,
                                      df_raw,
                                      condition_list,
