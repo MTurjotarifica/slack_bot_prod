@@ -9,13 +9,19 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slackeventsapi import SlackEventAdapter
 
-def interactive_trigger_route(client, df_raw, backgroundworker_wordcloud_shape, backgroundworker3_ddviz, backgroundworker_zenserp_trends,wordcloud_lang_block, wordcloud_shape_block2, wordcloud_color_block, dd_vis_blocks_startdate, dd_vis_blocks_indexdate, dd_vis_blocks_outputtype):
+def interactive_trigger_route(client,
+                                df_raw,
+                                condition_list,
+                                condition_list_dd_vis,
+                                backgroundworker_wordcloud_shape, 
+                                backgroundworker3_ddviz, 
+                                backgroundworker_zenserp_trends,
+                                wordcloud_lang_block, wordcloud_shape_block2, 
+                                wordcloud_color_block, 
+                                dd_vis_blocks_startdate, 
+                                dd_vis_blocks_indexdate, 
+                                dd_vis_blocks_outputtype):
     
-    #creating an empty list for condition branching on wordcloud
-    condition_list = []
-
-    #creating an empty list for condition branching on dd_vis_trigger
-    condition_list_dd_vis = []
 
     data = request.form
     data2 = request.form.to_dict()
@@ -144,7 +150,7 @@ def interactive_trigger_route(client, df_raw, backgroundworker_wordcloud_shape, 
         payload = json.loads(data2['payload'])
         kw_value=payload['actions'][0]['selected_option']['value']
         condition_list_dd_vis.append(kw_value)
-        
+
         print(condition_list)
         client.chat_postMessage(channel=channel_id,
                                 text= str(condition_list))
