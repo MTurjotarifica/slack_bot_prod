@@ -75,7 +75,7 @@ df_raw['date'] = pd.to_datetime(df_raw['date'])
 
 #########################################################################################
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
-def interactive_trigger_route():
+def interactive_trigger():
     return interactive_trigger_route(client,
                                      df_raw, 
                                      backgroundworker_wordcloud_shape, 
