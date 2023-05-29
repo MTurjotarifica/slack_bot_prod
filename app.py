@@ -2,7 +2,7 @@
 import os
 from slack_bolt import App
 from slack_bolt.adapter.flask import SlackRequestHandler
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, session
 #from flask_sqlalchemy import SQLAlchemy
 from dotenv import load_dotenv
 from threading import Thread
@@ -60,6 +60,8 @@ load_dotenv()
 
 # Initialize the Flask app and the Slack app
 app = Flask(__name__)
+app.secret_key = os.environ.get('FLASK_KEY')
+
 slack_app = App(
     token=os.environ["SLACK_BOT_TOKEN"],
     signing_secret=os.environ["SLACK_SIGNING_SECRET"]
@@ -72,11 +74,7 @@ df_raw = load_dd_df()
 # Converting date to datetime object
 df_raw['date'] = pd.to_datetime(df_raw['date'])
 
-#creating an empty list for condition branching on wordcloud
-condition_list = []
 
-#creating an empty list for condition branching on dd_vis_trigger
-condition_list_dd_vis = []
 
 #########################################################################################
 @app.route('/slack/interactive-endpoint', methods=['GET','POST'])
