@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from threading import Thread
 
-from flask import Flask, request, make_response
+from flask import Flask, request, make_response, session
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
@@ -22,6 +22,9 @@ def interactive_trigger_route(client,
                                 dd_vis_blocks_indexdate, 
                                 dd_vis_blocks_outputtype):
     
+    # Retrieve condition_list and condition_list_dd_vis from the session
+    condition_list = session.get('condition_list', [])
+    condition_list_dd_vis = session.get('condition_list_dd_vis', [])
 
     data = request.form
     data2 = request.form.to_dict()
@@ -98,6 +101,7 @@ def interactive_trigger_route(client,
         print(condition_list)
         client.chat_postMessage(channel=channel_id,
                                 text= str(condition_list))
+
         thr = Thread(target=backgroundworker_wordcloud_shape, args=[client,
                                                                     condition_list[-3], 
                                                                     condition_list[-4], 
@@ -106,6 +110,9 @@ def interactive_trigger_route(client,
                                                                     response_url,
                                                                     channel_id])
         thr.start()
+
+        # Reset condition_list after using it for word cloud
+        condition_list = []
 
     elif action_id == "dd_vis_trigger_act":
         payload = json.loads(data2['payload'])
@@ -155,6 +162,8 @@ def interactive_trigger_route(client,
         client.chat_postMessage(channel=channel_id,
                                 text= str(condition_list))
 
+
+
         # condition_list_dd_vis[-4] is keyword
         # condition_list_dd_vis[-3] is start date
         # condition_list_dd_vis[-2] is index date
@@ -172,13 +181,17 @@ def interactive_trigger_route(client,
         
         client.chat_postMessage(channel=channel_id, text="A backgroundworker is running your task. Please wait.")
 	
-
+        # Reset condition_list after using it for word cloud
+        condition_list = []
         #client.chat_postMessage(channel=channel_id, text=f"dd_vis_blocks_indexdate_act working kw: {condition_list_dd_vis[-3]} & startd: {condition_list_dd_vis[-2]} & indexd: {condition_list_dd_vis[-1]} & responseurl: {response_url} & chID:{channel_id}")
         
     else:
         client.chat_postMessage(channel=channel_id, text="Error: Please try again with different values.")
         #pass
         
+    # Update the session with the modified condition_list and condition_list_dd_vis
+    session['condition_list'] = condition_list
+    session['condition_list_dd_vis'] = condition_list_dd_vis
     
     return 'interactive trigger works', 200
 #######################################################__________________________________
