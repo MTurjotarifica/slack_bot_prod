@@ -9,10 +9,12 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slackeventsapi import SlackEventAdapter
 
+# Retrieve condition_list and condition_list_dd_vis from the session
+condition_list =  []
+condition_list_dd_vis = []
+
 def interactive_trigger_route(client,
                                 df_raw,
-                                condition_list,
-                                condition_list_dd_vis,
                                 backgroundworker_wordcloud_shape, 
                                 backgroundworker3_ddviz, 
                                 backgroundworker_zenserp_trends,
@@ -22,9 +24,7 @@ def interactive_trigger_route(client,
                                 dd_vis_blocks_indexdate, 
                                 dd_vis_blocks_outputtype):
     
-    # Retrieve condition_list and condition_list_dd_vis from the session
-    condition_list = session.get('condition_list', [])
-    condition_list_dd_vis = session.get('condition_list_dd_vis', [])
+    
 
     data = request.form
     data2 = request.form.to_dict()
@@ -189,9 +189,6 @@ def interactive_trigger_route(client,
         client.chat_postMessage(channel=channel_id, text="Error: Please try again with different values.")
         #pass
         
-    # Update the session with the modified condition_list and condition_list_dd_vis
-    session['condition_list'] = condition_list
-    session['condition_list_dd_vis'] = condition_list_dd_vis
-    
+
     return 'interactive trigger works', 200
 #######################################################__________________________________
