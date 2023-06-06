@@ -40,6 +40,8 @@ joblib
 regex
 tqdm
 
+openai
+
 
 
 
