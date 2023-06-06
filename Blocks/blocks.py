@@ -995,3 +995,21 @@ trend_block= [
 			}
 		}
 	]
+gptquery = [
+        {
+           "type": "divider"
+           },
+        {
+            "dispatch_action": True,
+            "type": "input",
+            "element": {
+                "type": "plain_text_input",
+                "action_id": "chatgpt"
+            },
+            "label": {
+                "type": "plain_text",
+                "text": "Please type the keyword for the Chatgpt",
+                "emoji": True
+            }
+        }
+    ]
