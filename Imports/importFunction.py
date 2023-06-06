@@ -1,5 +1,6 @@
 # Functions to import 
 from Blocks.blocks import *
+from Blocks.trendBlock import *
 
 from Database.database import *
 
