@@ -94,7 +94,9 @@ def interactive_trigger():
 #########################################################################################
 @app.route('/trends', methods=['POST'])
 def trend_route():
-    return zenserp_trends(client, trend_block)
+    df = pd.read_csv('unique_provider.csv')
+    trend_blocks = generate_trend_block(df)
+    return zenserp_trends(client, trend_blocks)
 
 
 # mp3 trigger slash command which creates mp3 and posts to slack
@@ -131,7 +133,10 @@ def wordcloud_route():
 def ddviz_route():
     return dd_vis_trigger(client, dd_vis_trigger_block)
 
-
+# Define the slash command handler
+@app.route("/chatgpt", methods=["POST"])
+def chatgpt_route():
+    return chatgpt_trigger(client, gptquery)
 
 #########################################################################################
 # Add a route for the /hello command
