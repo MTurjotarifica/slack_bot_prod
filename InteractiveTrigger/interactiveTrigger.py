@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 from threading import Thread
 
+import openai
+
 from flask import Flask, request, make_response, session
 from azure.storage.blob import BlobServiceClient, BlobClient, ContainerClient
 from slack_sdk import WebClient
@@ -24,8 +26,6 @@ def interactive_trigger_route(client,
                                 dd_vis_blocks_indexdate, 
                                 dd_vis_blocks_outputtype):
     
-    
-
     data = request.form
     data2 = request.form.to_dict()
     user_id = data.get('user_id')
@@ -37,7 +37,36 @@ def interactive_trigger_route(client,
     actions_value = data.get("actions.value")
     action_id = json.loads(data2['payload'])['actions'][0]['action_id']
 
-    if action_id == "trend-select":
+    if action_id == "chatgpt":
+        # Get the text of the user's command
+        command_text = json.loads(data2['payload'])['actions'][0]['value']
+        # Call the OpenAI API to generate a response
+        response = openai.Completion.create(
+            engine="text-davinci-003",
+            prompt=command_text,
+            max_tokens=100,
+            n=1,
+            stop=None,
+            temperature=0.8,
+        )
+        
+        # Send the generated text back to Slack
+        try:
+            # Use the Slack API client to send a message to the channel
+            client.chat_postMessage(
+                channel=channel_id,
+                text=response.choices[0].text
+            )
+
+        except SlackApiError as e:
+            # Print any errors to the console
+            print(f"Error sending message: {e}")
+
+        # Return an empty response
+        return make_response("", 200)
+        #return make_response(json.dumps(response_data), 200)
+
+    elif action_id == "trend-select":
 
         payload = json.loads(data2['payload'])
         selected_options = payload['actions'][0]['selected_options']
