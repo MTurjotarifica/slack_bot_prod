@@ -79,7 +79,7 @@ def interactive_trigger_route(client,
 
         payload = json.loads(data2['payload'])
         #obtain the value inserted in the text prompt
-        kw_value=payload['actions'][0]['value']
+        kw_value0=payload['actions'][0]['value']
         
         # appending arguments to the list that we created for wordcloud
         condition_list.append(kw_value)
@@ -94,7 +94,7 @@ def interactive_trigger_route(client,
         
     elif action_id == "wordcloud_kw_lang_act":
         payload = json.loads(data2['payload'])
-        kw_value=payload['actions'][0]['selected_option']['value']
+        kw_value1=payload['actions'][0]['selected_option']['value']
         condition_list.append(kw_value)
         
         
@@ -107,7 +107,7 @@ def interactive_trigger_route(client,
     elif action_id == "wordcloud_shape_act":
         payload = json.loads(data2['payload'])
         #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['selected_option']['value']
+        kw_value2=payload['actions'][0]['selected_option']['value']
         condition_list.append(kw_value)
         
         
@@ -121,7 +121,7 @@ def interactive_trigger_route(client,
     elif action_id == "wordcloud_color_act":
         payload = json.loads(data2['payload'])
         #obtaining kw_value and appending value to list
-        kw_value=payload['actions'][0]['selected_option']['value']
+        kw_value3=payload['actions'][0]['selected_option']['value']
         condition_list.append(kw_value)
         #def backgroundworker_wordcloud_shape(wordcloud_lang_to, 
                                             #wordcloud_lang_kw, 
@@ -132,10 +132,10 @@ def interactive_trigger_route(client,
                                 text= str(condition_list))
 
         thr = Thread(target=backgroundworker_wordcloud_shape, args=[client,
-                                                                    condition_list[-3], 
-                                                                    condition_list[-4], 
-                                                                    condition_list[-2],
-                                                                    condition_list[-1],
+                                                                    kw_value0, 
+                                                                    kw_value1, 
+                                                                    kw_value2,
+                                                                    kw_value3,
                                                                     response_url,
                                                                     channel_id])
         thr.start()
