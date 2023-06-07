@@ -21,5 +21,6 @@ from Routes.wordcloud_route import *
 from Routes.ddviz_route import *
 from Routes.hello import *
 from Routes.trends_route import *
+from Routes.chatgpt_route import *
 
 from InteractiveTrigger.interactiveTrigger import *
