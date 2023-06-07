@@ -82,25 +82,25 @@ def interactive_trigger_route(client,
         kw_value0=payload['actions'][0]['value']
         
         # appending arguments to the list that we created for wordcloud
-        condition_list.append(kw_value)
+#         condition_list.append(kw_value)
         
         
         
         #sending kw_value and language selection dropdown
         client.chat_postMessage(channel=channel_id,
-                                text=f"{kw_value}    {response_url}",
+                                text=f"{kw_value0}    {response_url}",
                                 blocks=wordcloud_lang_block
                                 )
         
     elif action_id == "wordcloud_kw_lang_act":
         payload = json.loads(data2['payload'])
         kw_value1=payload['actions'][0]['selected_option']['value']
-        condition_list.append(kw_value)
+#         condition_list.append(kw_value)
         
         
         #sending kw_value and language selection dropdown
         client.chat_postMessage(channel=channel_id,
-                                text=f"{kw_value}     {response_url}",
+                                text=f"{kw_value1}     {response_url}",
                                 blocks=wordcloud_shape_block2
                                 )
         
@@ -108,13 +108,13 @@ def interactive_trigger_route(client,
         payload = json.loads(data2['payload'])
         #obtaining kw_value and appending value to list
         kw_value2=payload['actions'][0]['selected_option']['value']
-        condition_list.append(kw_value)
+#         condition_list.append(kw_value)
         
         
         
         #sending kw_value and language selection dropdown
         client.chat_postMessage(channel=channel_id,
-                                text=f"{kw_value}     {response_url}",
+                                text=f"{kw_value2}     {response_url}",
                                 blocks=wordcloud_color_block
                                 )
         
@@ -122,14 +122,14 @@ def interactive_trigger_route(client,
         payload = json.loads(data2['payload'])
         #obtaining kw_value and appending value to list
         kw_value3=payload['actions'][0]['selected_option']['value']
-        condition_list.append(kw_value)
+#         condition_list.append(kw_value)
         #def backgroundworker_wordcloud_shape(wordcloud_lang_to, 
                                             #wordcloud_lang_kw, 
                                             #wordcloud_shape_kw, 
                                             #response_url):
-        print(condition_list)
-        client.chat_postMessage(channel=channel_id,
-                                text= str(condition_list))
+#         print(condition_list)
+#         client.chat_postMessage(channel=channel_id,
+#                                 text= str(condition_list))
 
         thr = Thread(target=backgroundworker_wordcloud_shape, args=[client,
                                                                     kw_value0, 
