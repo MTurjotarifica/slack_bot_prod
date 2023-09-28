@@ -27,19 +27,6 @@ jobs:
           python -m venv venv
           source venv/bin/activate
       
-#       - name: Install Wordcloud
-#         run: |
-#           pip install wordcloud-1.8.2.2-py3-none-any.whl
-          
-#       - name: Install sttylecloud
-#         run: |
-#           pip install stylecloud-0.5.1-py3-none-any.whl
-          
-      - name: Install requirements
-        run: |
-          pip install -r requirements.txt
-
-       
       - name: Install dependencies
         run: pip install -r requirements.txt
         
@@ -73,4 +60,4 @@ jobs:
         with:
           app-name: 'slackbotprod'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_83FBD51FE947449D98A746AFC02A6765 }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_75582ED6F08D41AFA7A55961C24E5480 }}
